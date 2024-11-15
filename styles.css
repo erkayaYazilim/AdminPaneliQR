@@ -1,0 +1,191 @@
+/* Genel Stil Ayarları */
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #f8f9fa;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
+h1, h3 {
+    text-align: center;
+}
+
+#saveBtn, #addFeatureBtn, #saveSettingsBtn {
+    display: block;
+    margin: 10px auto;
+    padding: 10px 20px;
+    font-size: 1em;
+}
+
+#qrcode {
+    margin-top: 20px;
+    text-align: center;
+}
+
+#qrcode a {
+    display: block;
+    margin-top: 10px;
+    font-size: 1.2em;
+    color: blue;
+    text-decoration: underline;
+}
+
+.feature {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin-bottom: 15px;
+    position: relative;
+    background-color: #fff;
+    border-radius: 5px;
+}
+
+.feature h4 {
+    margin-top: 0;
+}
+
+.remove-feature-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.table td, .table th {
+    vertical-align: middle;
+}
+
+.action-buttons button {
+    margin-right: 5px;
+}
+
+/* Telefon Önizleme Stili */
+.phone-preview {
+    width: 300px;
+    height: 600px;
+    border: 16px black solid;
+    border-top: 60px black solid;
+    border-bottom: 60px black solid;
+    border-radius: 36px;
+    margin: 0 auto;
+    overflow: hidden;
+    position: relative;
+    background-color: #fff;
+}
+
+.phone-screen {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+}
+
+/* Ürün Sayfası Stili */
+.header {
+    background-color: #fff;
+    padding: 15px 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    max-height: 50px;
+}
+
+.contact-info {
+    font-size: 0.8rem;
+    color: #555;
+    text-align: right;
+}
+
+.carousel-item img {
+    max-height: 200px;
+    object-fit: cover;
+    width: 100%;
+}
+
+.product-details h1 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    font-weight: 600;
+    text-align: center;
+    color: #333;
+}
+
+.price {
+    font-size: 1.2rem;
+    color: #dc3545;
+    margin-bottom: 20px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.features th {
+    width: 40%;
+}
+
+.social-share a {
+    margin: 0 5px;
+    font-size: 1.5rem;
+    color: #555;
+    transition: color 0.3s;
+}
+
+.social-share a:hover {
+    color: #0d6efd;
+}
+
+.footer {
+    background-color: #fff;
+    padding: 10px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #777;
+    margin-top: 20px;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+}
+
+/* Banner Stil Ayarları */
+.banner {
+    background: url('https://www.tokeninc.com/getmedia/61eeb9cd-0ba1-4a09-8290-03e9b5f2545c/1110x417-mobil-qr-odeme-nedir.jpg?width=1110&height=417&ext=.jpg') no-repeat center center; /* Arka plan resmi */
+    background-size: cover; /* Resmi kapsayacak şekilde ölçeklendir */
+    background-size: cover;
+    height: 500px;
+    position: relative;
+    margin-top: 56px; /* Navbar yüksekliği */
+}
+
+.banner::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.banner .container {
+    position: relative;
+    z-index: 1;
+}
+
+
+
+/* Form Stil Ayarları */
+.form-label {
+    font-weight: bold;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
