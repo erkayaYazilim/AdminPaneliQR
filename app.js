@@ -297,10 +297,10 @@ async function saveProduct() {
             // Veriyi Realtime Database'e ekle
             await database.ref('products/' + productKey).set(productData);
 
-            alert(isEditing ? 'Ürün güncellendi!' : 'Kayıt başarılı!');
+            alert(isEditing ? 'Ürün güncellendi!' : 'Kayıt başarılı! QR kodu aşağıda görüntüleyebilir ve indirebilirsiniz.');
 
-            // QR kodu oluştur
-            const qrData = `https://erkayayazilim.github.io/qrcode/user.html?id=${newProductKey}`;
+            // QR kodunu oluştur ve kullanıcıya göster
+            const qrData = `https://erkayayazilim.github.io/qrcode/user.html?id=${productKey}`;
 
             const qrcodeElement = document.getElementById('qrcode');
             qrcodeElement.innerHTML = ''; // Önceki QR kodunu temizle
@@ -315,22 +315,30 @@ async function saveProduct() {
             setTimeout(() => {
                 const canvas = qrcodeElement.querySelector('canvas');
                 const imgData = canvas.toDataURL('image/png');
+
+                // Ürün ismini dosya adına uygun hale getirin
+                const sanitizedProductName = productName.replace(/[<>:"\/\\|?*]+/g, '_');
+
                 const downloadLink = document.createElement('a');
                 downloadLink.href = imgData;
-                downloadLink.download = 'qrcode.png';
+                downloadLink.download = `${sanitizedProductName}.png`;
                 downloadLink.textContent = 'QR Kodu İndir';
+                downloadLink.classList.add('btn', 'btn-primary', 'mt-3');
                 qrcodeElement.appendChild(downloadLink);
             }, 500);
 
-            // Formu sıfırla
-            clearProductForm();
+            // Formu sıfırla ve başka bir ürün ekleme butonunu göster
+            const newProductBtn = document.createElement('button');
+            newProductBtn.textContent = 'Yeni Ürün Ekle';
+            newProductBtn.classList.add('btn', 'btn-success', 'mt-3');
+            newProductBtn.onclick = clearProductForm;
+            document.getElementById('addProductForm').appendChild(newProductBtn);
+
             uploadProgress.classList.add('d-none');
             progressBar.style.width = '0%';
             progressBar.textContent = '0%';
 
-            // Ürünleri yeniden yükle
             loadProducts();
-            showDashboard();
 
         } catch (error) {
             console.error('Hata:', error);
@@ -340,6 +348,7 @@ async function saveProduct() {
         alert('Lütfen tüm alanları doldurun.');
     }
 }
+
 
 // Ürünleri Yükleme ve Arama İşlevleri
 let allProducts = [];
@@ -371,7 +380,7 @@ function loadProducts() {
             productsTableBody.appendChild(tr);
 
             // QR kodu oluştur ve img etiketi içine yerleştir
-            const qrData = `https://yourwebsite.com/product.html?id=${productKey}`;
+            const qrData = `https://erkayayazilim.github.io/qrcode/user.html?id=${productKey}`;
             const tempDiv = document.createElement('div');
             new QRCode(tempDiv, {
                 text: qrData,
@@ -415,7 +424,7 @@ function searchProducts() {
         productsTableBody.appendChild(tr);
 
         // QR kodu oluştur ve img etiketi içine yerleştir
-        const qrData = `https://yourwebsite.com/product.html?id=${product.key}`;
+        const qrData = `https://erkayayazilim.github.io/qrcode/user.html?id=${productKey}`;
         const tempDiv = document.createElement('div');
         new QRCode(tempDiv, {
             text: qrData,
@@ -432,7 +441,7 @@ function searchProducts() {
 
 // QR Kodunu İndirme
 function downloadQRCode(productKey) {
-    const qrData = `https://yourwebsite.com/product.html?id=${productKey}`;
+    const qrData = `https://erkayayazilim.github.io/qrcode/user.html?id=${productKey}`;
     const tempDiv = document.createElement('div');
     new QRCode(tempDiv, {
         text: qrData,
