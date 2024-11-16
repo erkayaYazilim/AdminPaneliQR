@@ -157,13 +157,65 @@ function addFeature() {
 }
 
 function updatePreview() {
+    // Mevcut önizleme güncellemeleri...
     document.getElementById('previewProductName').textContent = document.getElementById('productName').value || 'Ürün Adı';
     document.getElementById('previewProductPrice').textContent = document.getElementById('productPrice').value ? document.getElementById('productPrice').value + ' TL' : 'Ürün Fiyatı';
     document.getElementById('previewProductDescription').textContent = document.getElementById('productDescription').value || 'Ürün Açıklaması';
 
     // Özellikleri güncelle
     updateFeaturePreview();
+
+    // Etiket önizlemesini güncelle
+    document.getElementById('labelProductName').textContent = document.getElementById('productName').value || 'Ürün Adı';
+    document.getElementById('labelProductCode').textContent = document.getElementById('productCode').value || 'Ürün Kodu';
+
+    // Etiket QR kodunu güncelle
+    updateLabelQRCode();
 }
+
+document.getElementById('printLabelBtn').addEventListener('click', printLabel);
+// Etiket QR kodunu güncelleme fonksiyonu
+function updateLabelQRCode() {
+    const labelQRCodeElement = document.getElementById('labelQRCode');
+    labelQRCodeElement.innerHTML = '';
+    const productKey = isEditing ? editingProductKey : 'new_product';
+    const qrData = `https://erkayayazilim.github.io/qrcode/user.html?id=${productKey}`;
+
+    new QRCode(labelQRCodeElement, {
+        text: qrData,
+        width: 70, // piksel cinsinden genişlik
+        height: 70, // piksel cinsinden yükseklik
+        correctLevel: QRCode.CorrectLevel.H
+    });
+}
+
+
+// Etiketi Yazdır fonksiyonu
+function printLabel() {
+    const labelContent = document.getElementById('labelContent').innerHTML;
+    const printWindow = window.open('', '', 'height=450,width=600');
+    printWindow.document.write('<html><head><title>Etiket Yazdır</title>');
+    printWindow.document.write('<style>');
+    printWindow.document.write('@page { size: 6cm 4.5cm; margin: 0; }');
+    printWindow.document.write('body { margin: 0;padding: 0; }');
+    printWindow.document.write('.label { width: 6cm; height: 4.5cm; border: 0px solid #000; position: relative; padding: 0cm; box-sizing: border-box; font-family: Arial, sans-serif; }');
+    printWindow.document.write('.label-top-left { position: absolute; top: 0.2cm; left: 0.2cm; }');
+    printWindow.document.write('.company-name { font-size: 12pt; font-weight: bold; margin-bottom: 0.1cm; }');
+    printWindow.document.write('.product-code, .product-name { font-size: 8pt; margin-bottom: 0.1cm; }');
+    printWindow.document.write('.label-bottom-right { position: absolute; bottom: 0.2cm; right: 0.2cm; border: 1px solid #000; padding: 0.1cm; }');
+    printWindow.document.write('#labelQRCode canvas { width: 1.9cm !important; height: 1.9cm !important; }');
+    printWindow.document.write('</style></head><body>');
+    printWindow.document.write('<div class="label">');
+    printWindow.document.write(labelContent);
+    printWindow.document.write('</div>');
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+}
+
+
 
 function updateImagePreview() {
     const previewCarouselInner = document.getElementById('previewCarouselInner');
@@ -230,6 +282,8 @@ async function saveProduct() {
     const productPrice = document.getElementById('productPrice').value.trim();
     const productDescription = document.getElementById('productDescription').value.trim();
     const productImages = document.getElementById('productImages').files;
+
+    
 
     if (productName && productCode && productPrice && productDescription) {
         // Ürün anahtarı belirle
@@ -355,6 +409,11 @@ async function saveProduct() {
     } else {
         alert('Lütfen tüm alanları doldurun.');
     }
+
+    updateLabelQRCode();
+
+    // Etiketi göster
+    document.getElementById('labelContainer').scrollIntoView({ behavior: 'smooth' });
 }
 
 // Ürünleri Yükleme ve Arama İşlevleri
