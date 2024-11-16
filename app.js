@@ -9,6 +9,7 @@ const firebaseConfig = {
     appId: "1:236478826016:web:34a9fa5b51c69f63045e45",
     measurementId: "G-0LY6WH95VM"
   };
+
 // Firebase'i Başlat
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
@@ -29,12 +30,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Arama İşlevi
     document.getElementById('searchInput').addEventListener('input', searchProducts);
 
+    // Excel Dosyası Yükleme Butonu
+    document.getElementById('excelFileInput').addEventListener('change', handleExcelUpload);
+
     // Yeni Ürün Ekleme
     document.getElementById('addFeatureBtn').addEventListener('click', addFeature);
     document.getElementById('saveBtn').addEventListener('click', saveProduct);
 
     // Canlı Önizleme Güncellemeleri
     document.getElementById('productName').addEventListener('input', updatePreview);
+    document.getElementById('productCode').addEventListener('input', updatePreview);
     document.getElementById('productPrice').addEventListener('input', updatePreview);
     document.getElementById('productDescription').addEventListener('input', updatePreview);
     document.getElementById('productImages').addEventListener('change', updateImagePreview);
@@ -93,6 +98,7 @@ let existingProductData = {};
 function clearProductForm() {
     // Form alanlarını sıfırlayın
     document.getElementById('productName').value = '';
+    document.getElementById('productCode').value = '';
     document.getElementById('productPrice').value = '';
     document.getElementById('productDescription').value = '';
     document.getElementById('productImages').value = '';
@@ -220,17 +226,19 @@ function updateFeaturePreview() {
 
 async function saveProduct() {
     const productName = document.getElementById('productName').value.trim();
+    const productCode = document.getElementById('productCode').value.trim();
     const productPrice = document.getElementById('productPrice').value.trim();
     const productDescription = document.getElementById('productDescription').value.trim();
     const productImages = document.getElementById('productImages').files;
 
-    if (productName && productPrice && productDescription) {
+    if (productName && productCode && productPrice && productDescription) {
         // Ürün anahtarı belirle
         let productKey = isEditing ? editingProductKey : database.ref().child('products').push().key;
 
         // Veriyi hazırlayın
         const productData = {
             productName: productName,
+            productCode: productCode,
             productPrice: productPrice,
             productDescription: productDescription,
             images: isEditing ? existingProductData.images || [] : [],
@@ -349,7 +357,6 @@ async function saveProduct() {
     }
 }
 
-
 // Ürünleri Yükleme ve Arama İşlevleri
 let allProducts = [];
 
@@ -369,6 +376,7 @@ function loadProducts() {
             tr.innerHTML = `
                 <td><img src="${productData.images[0] || ''}" alt="Ürün Resmi" style="width: 50px; height: 50px; object-fit: cover;"></td>
                 <td>${productData.productName}</td>
+                <td>${productData.productCode || ''}</td>
                 <td>${productData.productPrice} TL</td>
                 <td><img src="" alt="QR Kod" id="qrImg${productKey}" style="width: 50px; height: 50px;"></td>
                 <td class="action-buttons">
@@ -402,7 +410,8 @@ function loadProducts() {
 function searchProducts() {
     const searchValue = document.getElementById('searchInput').value.toLowerCase();
     const filteredProducts = allProducts.filter(product => 
-        product.productName.toLowerCase().includes(searchValue)
+        product.productName.toLowerCase().includes(searchValue) ||
+        (product.productCode && product.productCode.toLowerCase().includes(searchValue))
     );
 
     const productsTableBody = document.querySelector('#productsTable tbody');
@@ -413,6 +422,7 @@ function searchProducts() {
         tr.innerHTML = `
             <td><img src="${product.images[0] || ''}" alt="Ürün Resmi" style="width: 50px; height: 50px; object-fit: cover;"></td>
             <td>${product.productName}</td>
+            <td>${product.productCode || ''}</td>
             <td>${product.productPrice} TL</td>
             <td><img src="" alt="QR Kod" id="qrImg${product.key}" style="width: 50px; height: 50px;"></td>
             <td class="action-buttons">
@@ -424,7 +434,7 @@ function searchProducts() {
         productsTableBody.appendChild(tr);
 
         // QR kodu oluştur ve img etiketi içine yerleştir
-        const qrData = `https://erkayayazilim.github.io/qrcode/user.html?id=${productKey}`;
+        const qrData = `https://erkayayazilim.github.io/qrcode/user.html?id=${product.key}`;
         const tempDiv = document.createElement('div');
         new QRCode(tempDiv, {
             text: qrData,
@@ -437,6 +447,55 @@ function searchProducts() {
             document.getElementById(`qrImg${product.key}`).src = imgData;
         }, 500);
     });
+}
+
+// Excel Dosyasını İşleme ve Fiyat Güncelleme
+async function handleExcelUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        try {
+            const data = await file.arrayBuffer();
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+            // Başlık satırını al
+            const headers = jsonData[0];
+            const adiIndex = headers.indexOf('ADI');
+            const koduIndex = headers.indexOf('KODU');
+            const fiyatIndex = headers.indexOf('FİYAT');
+
+            if (adiIndex === -1 || koduIndex === -1 || fiyatIndex === -1) {
+                alert('Excel dosyası uygun formatta değil. Lütfen "ADI", "KODU" ve "FİYAT" sütunlarını kontrol edin.');
+                return;
+            }
+
+            // Her satırı işle
+            for (let i = 1; i < jsonData.length; i++) {
+                const row = jsonData[i];
+                const adi = row[adiIndex];
+                const kodu = row[koduIndex];
+                const fiyat = row[fiyatIndex];
+
+                if (kodu && fiyat) {
+                    // Veritabanında ürün kodu eşleşen ürünleri bul
+                    const snapshot = await database.ref('products').orderByChild('productCode').equalTo(kodu).once('value');
+                    snapshot.forEach(childSnapshot => {
+                        // Ürün fiyatını güncelle
+                        childSnapshot.ref.update({ productPrice: fiyat });
+                    });
+                }
+            }
+
+            alert('Fiyatlar başarıyla güncellendi.');
+            loadProducts();
+
+        } catch (error) {
+            console.error('Excel dosyası işlenirken hata oluştu:', error);
+            alert('Excel dosyası işlenirken hata oluştu.');
+        }
+    }
 }
 
 // QR Kodunu İndirme
@@ -492,6 +551,7 @@ function editProduct(productKey) {
 
             // Formu doldur
             document.getElementById('productName').value = data.productName;
+            document.getElementById('productCode').value = data.productCode || '';
             document.getElementById('productPrice').value = data.productPrice;
             document.getElementById('productDescription').value = data.productDescription;
 
