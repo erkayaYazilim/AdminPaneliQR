@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showAddProductForm();
     });
     document.getElementById('navSettings').addEventListener('click', showSettingsPage);
+    document.getElementById('navExcelUpload').addEventListener('click', showExcelUploadPage); // Excel sayfası gösterim fonksiyonu eklendi
 
     // Arama İşlevi
     document.getElementById('searchInput').addEventListener('input', searchProducts);
@@ -36,6 +37,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Yeni Ürün Ekleme
     document.getElementById('addFeatureBtn').addEventListener('click', addFeature);
     document.getElementById('saveBtn').addEventListener('click', saveProduct);
+    document.getElementById('cancelBtn').addEventListener('click', () => {
+        clearProductForm();
+        showDashboard();
+    });
 
     // Canlı Önizleme Güncellemeleri
     document.getElementById('productName').addEventListener('input', updatePreview);
@@ -56,6 +61,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Canlı Önizleme için Ayarları Yükle
     loadSettingsForPreview();
 });
+document.getElementById('navExcelUpload').addEventListener('click', showExcelUploadPage);
+function showExcelUploadPage() {
+    hideAllSections(); // Tüm diğer bölümleri gizler
+    document.getElementById('excelUploadPage').classList.remove('d-none'); // Excel yükleme sayfasını gösterir
+    setActiveNav('navExcelUpload'); // Menüde ilgili öğeyi aktif yapar
+}
+
+
 
 // Sayfa Gösterim Fonksiyonları
 function showDashboard() {
@@ -80,10 +93,12 @@ function hideAllSections() {
     document.getElementById('dashboard').classList.add('d-none');
     document.getElementById('addProductForm').classList.add('d-none');
     document.getElementById('settingsPage').classList.add('d-none');
+    document.getElementById('excelUploadPage').classList.add('d-none');
 }
 
+
 function setActiveNav(navId) {
-    document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+    document.querySelectorAll('.sidebar .nav-link').forEach(link => {
         link.classList.remove('active');
     });
     document.getElementById(navId).classList.add('active');
@@ -109,25 +124,29 @@ function clearProductForm() {
     document.getElementById('previewCarouselInner').innerHTML = '';
     document.getElementById('previewFeaturesTable').innerHTML = '';
     document.getElementById('previewProductName').textContent = 'Ürün Adı';
-    document.getElementById('previewProductPrice').textContent = 'Ürün Fiyatı';
-    document.getElementById('previewProductDescription').textContent = 'Ürün Açıklaması';
+    document.getElementById('previewProductPrice').textContent = '0.00 TL';
+    document.getElementById('previewProductDescription').textContent = 'Ürün açıklaması burada görünecek.';
     // Durumları sıfırlayın
     isEditing = false;
     editingProductKey = '';
     existingProductData = {};
     document.getElementById('formTitle').textContent = 'Yeni Ürün Oluştur';
-    document.getElementById('saveBtn').textContent = 'Kaydet ve QR Kod Oluştur';
+    document.getElementById('saveBtn').innerHTML = '<i class="bi bi-save me-1"></i> Kaydet ve QR Kod Oluştur';
+    document.getElementById('qrcode').innerHTML = '';
+    document.getElementById('newProductBtn')?.remove();
 }
 
 function addFeature() {
     featureCount++;
     const featuresContainer = document.getElementById('featuresContainer');
     const featureDiv = document.createElement('div');
-    featureDiv.classList.add('feature');
+    featureDiv.classList.add('feature', 'card', 'p-3', 'mb-3');
     featureDiv.setAttribute('data-feature-id', featureCount);
     featureDiv.innerHTML = `
-        <h4>Özellik ${featureCount}</h4>
-        <button type="button" class="btn btn-danger btn-sm remove-feature-btn">X</button>
+        <div class="d-flex justify-content-between">
+            <h5>Özellik ${featureCount}</h5>
+            <button type="button" class="btn btn-danger btn-sm remove-feature-btn"><i class="bi bi-trash"></i></button>
+        </div>
         <div class="mb-3">
             <label for="featureCategory${featureCount}" class="form-label">Kategori:</label>
             <input type="text" id="featureCategory${featureCount}" class="form-control" placeholder="Kategori">
@@ -159,8 +178,8 @@ function addFeature() {
 function updatePreview() {
     // Mevcut önizleme güncellemeleri...
     document.getElementById('previewProductName').textContent = document.getElementById('productName').value || 'Ürün Adı';
-    document.getElementById('previewProductPrice').textContent = document.getElementById('productPrice').value ? document.getElementById('productPrice').value + ' TL' : 'Ürün Fiyatı';
-    document.getElementById('previewProductDescription').textContent = document.getElementById('productDescription').value || 'Ürün Açıklaması';
+    document.getElementById('previewProductPrice').textContent = document.getElementById('productPrice').value ? document.getElementById('productPrice').value + ' TL' : '0.00 TL';
+    document.getElementById('previewProductDescription').textContent = document.getElementById('productDescription').value || 'Ürün açıklaması burada görünecek.';
 
     // Özellikleri güncelle
     updateFeaturePreview();
@@ -170,15 +189,15 @@ function updatePreview() {
     document.getElementById('labelProductCode').textContent = document.getElementById('productCode').value || 'Ürün Kodu';
 
     // Etiket QR kodunu güncelle
-    updateLabelQRCode();
+    const productKey = isEditing ? editingProductKey : 'new_product';
+    updateLabelQRCode(productKey);
 }
 
 document.getElementById('printLabelBtn').addEventListener('click', printLabel);
 // Etiket QR kodunu güncelleme fonksiyonu
-function updateLabelQRCode() {
+function updateLabelQRCode(productKey) {
     const labelQRCodeElement = document.getElementById('labelQRCode');
     labelQRCodeElement.innerHTML = '';
-    const productKey = isEditing ? editingProductKey : 'new_product';
     const qrData = `https://erkayayazilim.github.io/qrcode/user.html?id=${productKey}`;
 
     new QRCode(labelQRCodeElement, {
@@ -188,7 +207,6 @@ function updateLabelQRCode() {
         correctLevel: QRCode.CorrectLevel.H
     });
 }
-
 
 // Etiketi Yazdır fonksiyonu
 function printLabel() {
@@ -214,8 +232,6 @@ function printLabel() {
     printWindow.print();
     printWindow.close();
 }
-
-
 
 function updateImagePreview() {
     const previewCarouselInner = document.getElementById('previewCarouselInner');
@@ -250,6 +266,15 @@ function updateImagePreview() {
                 carouselItem.appendChild(img);
                 previewCarouselInner.appendChild(carouselItem);
             });
+        } else {
+            // Varsayılan resim
+            const carouselItem = document.createElement('div');
+            carouselItem.className = 'carousel-item active';
+            const img = document.createElement('img');
+            img.src = 'placeholder.jpg'; // Varsayılan resim yolu
+            img.className = 'd-block w-100';
+            carouselItem.appendChild(img);
+            previewCarouselInner.appendChild(carouselItem);
         }
     }
 }
@@ -260,8 +285,11 @@ function updateFeaturePreview() {
     const features = document.querySelectorAll('.feature');
     features.forEach(featureDiv => {
         const featureId = featureDiv.getAttribute('data-feature-id');
-        const category = featureDiv.querySelector(`#featureCategory${featureId}`).value.trim() || 'Kategori';
-        const description = featureDiv.querySelector(`#featureDescription${featureId}`).value.trim() || 'Açıklama';
+        const categoryElement = featureDiv.querySelector(`#featureCategory${featureId}`);
+        const descriptionElement = featureDiv.querySelector(`#featureDescription${featureId}`);
+
+        const category = categoryElement ? categoryElement.value.trim() || 'Kategori' : 'Kategori';
+        const description = descriptionElement ? descriptionElement.value.trim() || 'Açıklama' : 'Açıklama';
 
         const tr = document.createElement('tr');
         const th = document.createElement('th');
@@ -282,8 +310,6 @@ async function saveProduct() {
     const productPrice = document.getElementById('productPrice').value.trim();
     const productDescription = document.getElementById('productDescription').value.trim();
     const productImages = document.getElementById('productImages').files;
-
-    
 
     if (productName && productCode && productPrice && productDescription) {
         // Ürün anahtarı belirle
@@ -389,11 +415,18 @@ async function saveProduct() {
                 qrcodeElement.appendChild(downloadLink);
             }, 500);
 
+            // Etiket QR kodunu güncelle
+            updateLabelQRCode(productKey);
+
             // Formu sıfırla ve başka bir ürün ekleme butonunu göster
             const newProductBtn = document.createElement('button');
             newProductBtn.textContent = 'Yeni Ürün Ekle';
+            newProductBtn.id = 'newProductBtn';
             newProductBtn.classList.add('btn', 'btn-success', 'mt-3');
-            newProductBtn.onclick = clearProductForm;
+            newProductBtn.onclick = () => {
+                clearProductForm();
+                showAddProductForm();
+            };
             document.getElementById('addProductForm').appendChild(newProductBtn);
 
             uploadProgress.classList.add('d-none');
@@ -404,16 +437,18 @@ async function saveProduct() {
 
         } catch (error) {
             console.error('Hata:', error);
+            alert('Ürün kaydedilirken bir hata oluştu.');
+            uploadProgress.classList.add('d-none');
+            progressBar.style.width = '0%';
+            progressBar.textContent = '0%';
         }
+
+        // Etiketi göster
+        document.getElementById('labelContainer').scrollIntoView({ behavior: 'smooth' });
 
     } else {
         alert('Lütfen tüm alanları doldurun.');
     }
-
-    updateLabelQRCode();
-
-    // Etiketi göster
-    document.getElementById('labelContainer').scrollIntoView({ behavior: 'smooth' });
 }
 
 // Ürünleri Yükleme ve Arama İşlevleri
@@ -431,17 +466,19 @@ function loadProducts() {
             const productData = childSnapshot.val();
             allProducts.push({ key: productKey, ...productData });
 
+            const imageSrc = (productData.images && productData.images.length > 0) ? productData.images[0] : '';
+
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td><img src="${productData.images[0] || ''}" alt="Ürün Resmi" style="width: 50px; height: 50px; object-fit: cover;"></td>
+                <td><img src="${imageSrc}" alt="Ürün Resmi" style="width: 50px; height: 50px; object-fit: cover;"></td>
                 <td>${productData.productName}</td>
                 <td>${productData.productCode || ''}</td>
                 <td>${productData.productPrice} TL</td>
                 <td><img src="" alt="QR Kod" id="qrImg${productKey}" style="width: 50px; height: 50px;"></td>
                 <td class="action-buttons">
-                    <button class="btn btn-primary btn-sm" onclick="downloadQRCode('${productKey}')">QR Kod</button>
-                    <button class="btn btn-warning btn-sm" onclick="editProduct('${productKey}')">Düzenle</button>
-                    <button class="btn btn-danger btn-sm" onclick="deleteProduct('${productKey}')">Sil</button>
+                    <button class="btn btn-primary btn-sm" onclick="downloadQRCode('${productKey}')"><i class="bi bi-download"></i></button>
+                    <button class="btn btn-warning btn-sm" onclick="editProduct('${productKey}')"><i class="bi bi-pencil"></i></button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteProduct('${productKey}')"><i class="bi bi-trash"></i></button>
                 </td>
             `;
             productsTableBody.appendChild(tr);
@@ -468,7 +505,7 @@ function loadProducts() {
 
 function searchProducts() {
     const searchValue = document.getElementById('searchInput').value.toLowerCase();
-    const filteredProducts = allProducts.filter(product => 
+    const filteredProducts = allProducts.filter(product =>
         product.productName.toLowerCase().includes(searchValue) ||
         (product.productCode && product.productCode.toLowerCase().includes(searchValue))
     );
@@ -477,17 +514,19 @@ function searchProducts() {
     productsTableBody.innerHTML = '';
 
     filteredProducts.forEach(product => {
+        const imageSrc = (product.images && product.images.length > 0) ? product.images[0] : '';
+
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td><img src="${product.images[0] || ''}" alt="Ürün Resmi" style="width: 50px; height: 50px; object-fit: cover;"></td>
+            <td><img src="${imageSrc}" alt="Ürün Resmi" style="width: 50px; height: 50px; object-fit: cover;"></td>
             <td>${product.productName}</td>
             <td>${product.productCode || ''}</td>
             <td>${product.productPrice} TL</td>
             <td><img src="" alt="QR Kod" id="qrImg${product.key}" style="width: 50px; height: 50px;"></td>
             <td class="action-buttons">
-                <button class="btn btn-primary btn-sm" onclick="downloadQRCode('${product.key}')">QR Kod</button>
-                <button class="btn btn-warning btn-sm" onclick="editProduct('${product.key}')">Düzenle</button>
-                <button class="btn btn-danger btn-sm" onclick="deleteProduct('${product.key}')">Sil</button>
+                <button class="btn btn-primary btn-sm" onclick="downloadQRCode('${product.key}')"><i class="bi bi-download"></i></button>
+                <button class="btn btn-warning btn-sm" onclick="editProduct('${product.key}')"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-danger btn-sm" onclick="deleteProduct('${product.key}')"><i class="bi bi-trash"></i></button>
             </td>
         `;
         productsTableBody.appendChild(tr);
@@ -520,7 +559,7 @@ async function handleExcelUpload(event) {
             const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
             // Başlık satırını al
-            const headers = jsonData[0];
+            const headers = jsonData[0].map(header => header.toString().toUpperCase());
             const adiIndex = headers.indexOf('ADI');
             const koduIndex = headers.indexOf('KODU');
             const fiyatIndex = headers.indexOf('FİYAT');
@@ -529,6 +568,15 @@ async function handleExcelUpload(event) {
                 alert('Excel dosyası uygun formatta değil. Lütfen "ADI", "KODU" ve "FİYAT" sütunlarını kontrol edin.');
                 return;
             }
+
+            // İşlem göstergesi
+            const totalRows = jsonData.length - 1;
+            let processedRows = 0;
+
+            // Yükleme Progress Bar'ını göster
+            const uploadProgress = document.getElementById('excelUploadProgress');
+            const progressBar = document.getElementById('excelProgressBar');
+            uploadProgress.classList.remove('d-none');
 
             // Her satırı işle
             for (let i = 1; i < jsonData.length; i++) {
@@ -539,23 +587,39 @@ async function handleExcelUpload(event) {
 
                 if (kodu && fiyat) {
                     // Veritabanında ürün kodu eşleşen ürünleri bul
-                    const snapshot = await database.ref('products').orderByChild('productCode').equalTo(kodu).once('value');
+                    const snapshot = await database.ref('products').orderByChild('productCode').equalTo(kodu.toString()).once('value');
                     snapshot.forEach(childSnapshot => {
                         // Ürün fiyatını güncelle
-                        childSnapshot.ref.update({ productPrice: fiyat });
+                        childSnapshot.ref.update({ productPrice: fiyat.toString() });
                     });
                 }
+
+                processedRows++;
+                // İlerleme yüzdesini göster
+                let progress = Math.round((processedRows / totalRows) * 100);
+                progressBar.style.width = progress + '%';
+                progressBar.textContent = progress + '%';
             }
 
             alert('Fiyatlar başarıyla güncellendi.');
             loadProducts();
 
+            // Yükleme Progress Bar'ını gizle
+            uploadProgress.classList.add('d-none');
+            progressBar.style.width = '0%';
+            progressBar.textContent = '0%';
+
         } catch (error) {
             console.error('Excel dosyası işlenirken hata oluştu:', error);
             alert('Excel dosyası işlenirken hata oluştu.');
+            // Yükleme Progress Bar'ını gizle
+            uploadProgress.classList.add('d-none');
+            progressBar.style.width = '0%';
+            progressBar.textContent = '0%';
         }
     }
 }
+
 
 // QR Kodunu İndirme
 function downloadQRCode(productKey) {
@@ -586,6 +650,7 @@ function deleteProduct(productKey) {
         })
         .catch(error => {
             console.error('Hata:', error);
+            alert('Ürün silinirken bir hata oluştu.');
         });
     }
 }
@@ -600,7 +665,7 @@ function editProduct(productKey) {
     isEditing = true;
     editingProductKey = productKey;
     document.getElementById('formTitle').textContent = 'Ürünü Düzenle';
-    document.getElementById('saveBtn').textContent = 'Güncelle';
+    document.getElementById('saveBtn').innerHTML = '<i class="bi bi-save me-1"></i> Güncelle';
 
     database.ref('products/' + productKey).once('value')
     .then(snapshot => {
@@ -647,10 +712,13 @@ function editProduct(productKey) {
 
             // Canlı önizlemeyi güncelle
             updatePreview();
+            // Resim önizlemesini güncelle
+            updateImagePreview();
         }
     })
     .catch(error => {
         console.error('Hata:', error);
+        alert('Ürün yüklenirken bir hata oluştu.');
     });
 }
 
@@ -669,9 +737,11 @@ function saveSettings() {
     database.ref('settings').set(settingsData)
     .then(() => {
         alert('Ayarlar kaydedildi.');
+        loadSettingsForPreview();
     })
     .catch(error => {
         console.error('Hata:', error);
+        alert('Ayarlar kaydedilirken bir hata oluştu.');
     });
 }
 
