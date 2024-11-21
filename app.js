@@ -113,6 +113,7 @@ let existingProductData = {};
 function clearProductForm() {
     // Form alanlarını sıfırlayın
     document.getElementById('productName').value = '';
+    document.getElementById('productLink').value = '';
     document.getElementById('productCode').value = '';
     document.getElementById('productPrice').value = '';
     document.getElementById('productDescription').value = '';
@@ -123,6 +124,7 @@ function clearProductForm() {
     // Önizlemeyi sıfırlayın
     document.getElementById('previewCarouselInner').innerHTML = '';
     document.getElementById('previewFeaturesTable').innerHTML = '';
+    document.getElementById('previewProductLink').innerHTML = '';
     document.getElementById('previewProductName').textContent = 'Ürün Adı';
     document.getElementById('previewProductPrice').textContent = '0.00 TL';
     document.getElementById('previewProductDescription').textContent = 'Ürün açıklaması burada görünecek.';
@@ -181,6 +183,15 @@ function updatePreview() {
     document.getElementById('previewProductPrice').textContent = document.getElementById('productPrice').value ? document.getElementById('productPrice').value + ' TL' : '0.00 TL';
     document.getElementById('previewProductDescription').textContent = document.getElementById('productDescription').value || 'Ürün açıklaması burada görünecek.';
 
+
+    const productLink = document.getElementById('productLink').value.trim();
+    const previewProductLinkElement = document.getElementById('previewProductLink');
+
+    if (productLink) {
+        previewProductLinkElement.innerHTML = `<a href="${productLink}" target="_blank">Ürüne Git</a>`;
+    } else {
+        previewProductLinkElement.innerHTML = '';
+    }
     // Özellikleri güncelle
     updateFeaturePreview();
 
@@ -308,6 +319,7 @@ async function saveProduct() {
     const productName = document.getElementById('productName').value.trim();
     const productCode = document.getElementById('productCode').value.trim();
     const productPrice = document.getElementById('productPrice').value.trim();
+    const productLink = document.getElementById('productLink').value.trim();
     const productDescription = document.getElementById('productDescription').value.trim();
     const productImages = document.getElementById('productImages').files;
 
@@ -321,6 +333,7 @@ async function saveProduct() {
             productCode: productCode,
             productPrice: productPrice,
             productDescription: productDescription,
+            productLink: productLink,
             images: isEditing ? existingProductData.images || [] : [],
             features: []
         };
@@ -676,6 +689,7 @@ function editProduct(productKey) {
             // Formu doldur
             document.getElementById('productName').value = data.productName;
             document.getElementById('productCode').value = data.productCode || '';
+            document.getElementById('productLink').value = data.productLink || '';
             document.getElementById('productPrice').value = data.productPrice;
             document.getElementById('productDescription').value = data.productDescription;
 
