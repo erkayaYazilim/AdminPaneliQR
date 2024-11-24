@@ -1,239 +1,482 @@
 /* Genel Stil Ayarları */
 body {
-    font-family: 'Montserrat', sans-serif;
-    background-color: #f8f9fa;
-}
-
-.navbar-brand {
-    font-weight: bold;
-    font-size: 1.5em;
-}
-
-h1, h3 {
-    text-align: center;
-}
-
-#saveBtn, #addFeatureBtn, #saveSettingsBtn {
-    display: block;
-    margin: 10px auto;
-    padding: 10px 20px;
-    font-size: 1em;
-}
-
-#qrcode {
-    margin-top: 20px;
-    text-align: center;
-}
-
-#qrcode a {
-    display: block;
-    margin-top: 10px;
-    font-size: 1.2em;
-    color: blue;
-    text-decoration: underline;
-}
-
-.feature {
-    border: 1px solid #ccc;
-    padding: 15px;
-    margin-bottom: 15px;
-    position: relative;
-    background-color: #fff;
-    border-radius: 5px;
-}
-
-.feature h4 {
-    margin-top: 0;
-}
-
-.remove-feature-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-}
-
-.table td, .table th {
-    vertical-align: middle;
-}
-
-.action-buttons button {
-    margin-right: 5px;
-}
-
-/* Telefon Önizleme Stili */
-.phone-preview {
-    width: 300px;
-    height: 600px;
-    border: 16px black solid;
-    border-top: 60px black solid;
-    border-bottom: 60px black solid;
-    border-radius: 36px;
-    margin: 0 auto;
-    overflow: hidden;
-    position: relative;
-    background-color: #fff;
-}
-
-.phone-screen {
-    width: 100%;
-    height: 100%;
-    overflow-y: auto;
-}
-
-/* Ürün Sayfası Stili */
-.header {
-    background-color: #fff;
-    padding: 15px 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
-}
-
-.header-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.logo {
-    max-height: 50px;
-}
-
-.contact-info {
-    font-size: 0.8rem;
-    color: #555;
-    text-align: right;
-}
-
-.carousel-item img {
-    max-height: 200px;
-    object-fit: cover;
-    width: 100%;
-}
-
-.product-details h1 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-    font-weight: 600;
-    text-align: center;
+    font-family: 'Roboto', sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+    padding: 0;
     color: #333;
 }
 
-.price {
-    font-size: 1.2rem;
-    color: #dc3545;
-    margin-bottom: 20px;
-    font-weight: 600;
-    text-align: center;
+/* Navbar Stil Ayarları */
+.navbar {
+    background-color: #343a40;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.features th {
-    width: 40%;
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5em;
+    letter-spacing: 1px;
 }
 
-.social-share a {
-    margin: 0 5px;
-    font-size: 1.5rem;
-    color: #555;
+.navbar .nav-link {
+    color: #ffffff;
+    margin-right: 20px;
     transition: color 0.3s;
 }
 
-.social-share a:hover {
-    color: #0d6efd;
+.navbar .nav-link:hover {
+    color: #adb5bd;
 }
 
-.footer {
-    background-color: #fff;
-    padding: 10px;
+/* Başlıklar */
+h1, h3 {
     text-align: center;
-    font-size: 0.8rem;
-    color: #777;
-    margin-top: 20px;
-    box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+    color: #212529;
+    font-weight: 700;
 }
 
-/* Banner Stil Ayarları */
-.banner {
-    background: url('https://www.tokeninc.com/getmedia/61eeb9cd-0ba1-4a09-8290-03e9b5f2545c/1110x417-mobil-qr-odeme-nedir.jpg?width=1110&height=417&ext=.jpg') no-repeat center center; /* Arka plan resmi */
-    background-size: cover; /* Resmi kapsayacak şekilde ölçeklendir */
-    background-size: cover;
-    height: 500px;
-    position: relative;
-    margin-top: 56px; /* Navbar yüksekliği */
+h2, h4 {
+    color: #212529;
+    font-weight: 600;
 }
 
-.banner::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.banner .container {
-    position: relative;
-    z-index: 1;
-}
-
-
-
-/* Form Stil Ayarları */
-.form-label {
-    font-weight: bold;
+/* Butonlar */
+.btn {
+    font-size: 1em;
+    padding: 10px 25px;
+    border-radius: 5px;
+    transition: background-color 0.3s, transform 0.3s;
 }
 
 .btn-primary {
     background-color: #007bff;
     border-color: #007bff;
 }
-@page { size: 6cm 4.5cm; margin: 0; }
-body, html { margin: 0; padding: 0; }
-.label {
-    width: 6cm;
-    height: 4.5cm;
-    border: 0.3px solid #000;
-    position: relative;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
-    overflow: hidden; /* Taşmayı önler */
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+    transform: translateY(-2px);
 }
 
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
 
-.label-top-left {
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+    transform: translateY(-2px);
+}
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+    transform: translateY(-2px);
+}
+
+.btn-outline-secondary {
+    background-color: transparent;
+    border-color: #6c757d;
+    color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+/* Form Etiketleri */
+.form-label {
+    font-weight: 600;
+    color: #212529;
+}
+
+/* Progress Bar */
+.progress {
+    height: 1.5rem;
+    border-radius: 0.25rem;
+}
+
+.progress-bar {
+    font-size: 1rem;
+    line-height: 1.5rem;
+    color: #fff;
+    text-align: center;
+    background-color: #007bff;
+}
+
+/* Feature Bölümü */
+.feature {
+    border: 1px solid #dee2e6;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.feature h5 {
+    margin-top: 0;
+    font-weight: 600;
+    color: #212529;
+}
+
+.remove-feature-btn {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 15px;
+    right: 15px;
+    background-color: transparent;
+    border: none;
+    color: #dc3545;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.remove-feature-btn:hover {
+    color: #a71d2a;
+}
+
+/* Tablo Stil Ayarları */
+.table td, .table th {
+    vertical-align: middle;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-weight: 600;
+}
+
+.action-buttons button {
+    margin-right: 5px;
+}
+
+/* Telefon Önizleme */
+.phone-preview {
+    width: 320px;
+    height: 640px;
+    border: 16px #333 solid;
+    border-top: 60px #333 solid;
+    border-bottom: 60px #333 solid;
+    border-radius: 36px;
+    margin: 0 auto;
+    overflow: hidden;
+    background-color: #fff;
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.phone-screen {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    background-color: #f0f2f5;
+}
+
+/* Header ve Footer */
+.header {
+    background-color: #343a40;
+    padding: 20px 30px;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header .logo {
+    max-height: 50px;
+    transition: transform 0.3s;
+}
+
+.header .logo:hover {
+    transform: scale(1.1);
+}
+
+.header .contact-info p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.footer {
+    background-color: #f8f9fa;
+    padding: 15px 20px;
+    text-align: center;
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-top: 30px;
+    border-top: 1px solid #dee2e6;
+}
+
+.footer .contact-info p {
+    margin: 5px 0;
+}
+
+/* Carousel */
+.carousel-item img {
+    max-height: 220px;
+    object-fit: cover;
+    width: 100%;
+    border-radius: 10px;
+    transition: transform 0.3s;
+}
+
+.carousel-item img:hover {
+    transform: scale(1.05);
+}
+
+/* Ürün Detayları */
+.product-details h2 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    font-weight: 700;
+    text-align: center;
+    color: #212529;
+}
+
+.price {
+    font-size: 1.4rem;
+    color: #28a745;
+    margin-bottom: 25px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.price del {
+    color: #6c757d;
+    font-size: 1rem;
+}
+
+.features th {
+    width: 40%;
+}
+
+.features th, .features td {
+    font-size: 0.9rem;
+}
+
+.description {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #495057;
+    background-color: #e9ecef;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+}
+
+.product-link a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.product-link a:hover {
+    text-decoration: underline;
+}
+
+/* Sosyal Medya Paylaşım Butonları */
+.social-share a {
+    margin: 0 10px;
+    font-size: 1.8rem;
+    color: #495057;
+    transition: color 0.3s;
+}
+
+.social-share a:hover {
+    color: #007bff;
+}
+
+/* Etiket Önizleme */
+.label-preview h4 {
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    color: #212529;
+}
+
+.label {
+    position: relative;
+    font-family: 'Roboto', sans-serif;
+    width: 6cm;
+    height: 4.5cm;
+    border: 2px solid #dee2e6;
+    background-color: #fff;
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.label-header {
+    background-color: #343a40;
+    color: #fff;
+    text-align: center;
+    padding: 0.3cm;
 }
 
 .company-name {
-    font-size: 14pt;
-    font-weight: bold;
-    margin-left: 0.2px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.section-divider {
+    border: none;
+    border-top: 1px solid #000;
+    margin: 0;
+}
+
+.label-middle {
+    padding: 0.3cm;
+    text-align: left;
+    font-size: 13px;
 }
 
 .product-code,
 .product-name {
-    font-size: 10pt;
-    margin-top: 0.1cm;
-    margin-left: 0.2px;
+    margin: 3px 0;
+    font-size: 13px;
+    font-weight: 500;
 }
 
-.label-bottom-right {
+.label-footer {
     position: absolute;
-    bottom: 0.2cm;
-    right: 0.2cm;
+    bottom: 0.3cm;
+    left: 0.3cm;
+    right: 0.3cm;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.qr-border {
-    border: 0px solid #000;
-    padding: 0.1cm;
-    display: inline-block;
+.scan-text {
+    font-size: 11px;
+    text-align: left;
+    flex: 1;
+}
+
+.qr-code {
+    width: 2.2cm;
+    height: 2.2cm;
 }
 
 #labelQRCode canvas {
     width: 100% !important;
     height: 100% !important;
+}
+
+/* Dikey Etiket İçin Stil */
+.label.vertical {
+    transform: rotate(90deg);
+    transform-origin: center center;
+    width: 6cm;
+    height: 4.5cm;
+}
+
+/* QR Kod Bölümü */
+#qrcode {
+    margin-top: 25px;
+    text-align: center;
+}
+
+#qrcode a {
+    display: block;
+    margin-top: 15px;
+    font-size: 1.3em;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+#qrcode a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Ayarlar */
+@media (max-width: 767.98px) {
+    .phone-preview {
+        width: 100%;
+        height: auto;
+        border: none;
+        border-radius: 0;
+        margin: 0;
+        box-shadow: none;
+    }
+
+    .navbar .nav-link {
+        margin-right: 10px;
+    }
+
+    .header, .footer {
+        text-align: center;
+        flex-direction: column;
+    }
+
+    .header .contact-info {
+        margin-top: 10px;
+    }
+
+    .feature {
+        padding: 15px;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 12px 0;
+    }
+
+    .remove-feature-btn {
+        top: 10px;
+        right: 10px;
+    }
+
+    .label {
+        width: 100%;
+        height: auto;
+    }
+
+    .label.vertical {
+        transform: none;
+    }
+}
+
+/* Yazdırma Ayarları */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    .label {
+        visibility: visible;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+}
+
+@page {
+    size: 6cm 4.5cm;
+    margin: 0;
 }

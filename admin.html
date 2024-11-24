@@ -4,117 +4,29 @@
     <meta charset="UTF-8">
     <title>Admin Paneli</title>
 
+    <!-- Favicon -->
     <link rel="icon" href="erkayalogo.png" type="image/x-icon">
+
+    <!-- Responsive Ayarları -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <!-- Bootstrap CSS ve İkonlar -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <!-- Özel Stil Dosyası -->
     <link rel="stylesheet" href="styles.css">
+
     <!-- Font Awesome ve Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Favicon -->
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <style>
-        /* Genel Stil Ayarları */
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Roboto', sans-serif;
-        }
-        /* Navbar Stil */
-        .navbar {
-            background-color: #343a40;
-        }
-        .navbar-brand {
-            font-weight: 700;
-        }
-        .nav-link {
-            color: #adb5bd !important;
-            margin-right: 15px;
-        }
-        .nav-link.active, .nav-link:hover {
-            color: #fff !important;
-        }
-        /* İçerik Bölümü */
-        .container {
-            max-width: 1200px;
-        }
-        /* Başlıklar */
-        h1, h2, h3, h4, h5, h6 {
-            font-weight: 700;
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-        /* Formlar ve Butonlar */
-        .form-control, .btn, .table {
-            border-radius: 5px;
-        }
-        .btn-primary {
-            background-color: #007bff;
-            border: none;
-        }
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-        /* Kartlar */
-        .card {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        /* Etiket Önizleme */
-        .label-preview {
-            border: 1px solid #dee2e6;
-            padding: 20px;
-            border-radius: 10px;
-            background-color: #fff;
-        }
-        /* Telefon Önizleme */
-        .phone-preview {
-            border: 1px solid #dee2e6;
-            border-radius: 30px;
-            overflow: hidden;
-            background-color: #fff;
-            padding: 20px;
-        }
-        .phone-screen {
-            width: 100%;
-            height: 600px;
-            overflow-y: scroll;
-        }
-        /* Footer */
-        footer.footer {
-            background-color: #343a40;
-            color: #adb5bd;
-            padding: 10px;
-            text-align: center;
-        }
-        /* Sosyal Medya İkonları */
-        .social-share a {
-            color: #343a40;
-            font-size: 24px;
-            margin: 0 10px;
-        }
-        .social-share a:hover {
-            color: #007bff;
-        }
-        /* Responsive Düzenlemeler */
-        @media (max-width: 767px) {
-            .nav-link {
-                margin-right: 0;
-                margin-bottom: 10px;
-            }
-            .navbar-collapse {
-                text-align: center;
-            }
-            .phone-screen {
-                height: 400px;
-            }
-        }
-    </style>
+
+    <!-- Özel Stil -->
+
+   
+
 </head>
 <body>
 
@@ -122,30 +34,79 @@
     <nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">Admin Paneli</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav align-items-center">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#" id="navDashboard"><i class="bi bi-box-seam me-1"></i> Ürünler</a>
+                        <a class="nav-link active" aria-current="page" href="#" id="navDashboard">
+                            <i class="bi bi-box-seam me-1"></i> Ürünler
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#" id="navAddProduct"><i class="bi bi-plus-circle me-1"></i> Yeni Ürün</a>
+                        <a class="nav-link" href="#" id="navAddProduct">
+                            <i class="bi bi-plus-circle me-1"></i> Yeni Ürün
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#" id="navExcelUpload"><i class="bi bi-file-earmark-spreadsheet me-1"></i> Fiyat Güncelle</a>
+                        <a class="nav-link" href="#" id="navExcelUpload">
+                            <i class="bi bi-file-earmark-spreadsheet me-1"></i> Fiyat/Stok Güncelle
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#" id="navSettings"><i class="bi bi-gear me-1"></i> Ayarlar</a>
+                        <a class="nav-link" href="#" id="navSettings">
+                            <i class="bi bi-gear me-1"></i> Ayarlar
+                        </a>
+                    </li>
+                    <!-- Yeni Menü Elemanı: Bütün Ürünleri Gör -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="navViewAllProducts">
+                            <i class="bi bi-eye me-1"></i> Bütün Ürünleri Gör
+                        </a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 
+
     <!-- İçerik Bölümü -->
     <div class="container mt-4" id="content">
+
+        <!-- Diğer bölümler... -->
+
+        <!-- Yeni Bölüm: Tüm Ürünler Sayfası -->
+        <div id="allProductsPage" class="d-none">
+            <h1 class="mb-4">Tüm Ürünler</h1>
+            <!-- Yükleme Progress Bar -->
+            <div class="progress mb-3" id="allProductsProgress" style="display: none;">
+                <div class="progress-bar" role="progressbar" style="width: 0%;" id="allProductsProgressBar">0%</div>
+            </div>
+            <div class="card p-4">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle" id="allProductsTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Ürün Resmi</th>
+                                <th>Ürün İsmi</th>
+                                <th>Ürün Kodu</th>
+                                <th>Liste Fiyatı</th>
+                                <th>İndirimli Fiyat</th>
+                                <th>Mevcut Stok</th>
+                                <th>Satılabilir</th>
+                                <th>QR Kod</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Ürünler dinamik olarak yüklenecek -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
 
         <!-- Dashboard (Ürün Listesi) -->
         <div id="dashboard" class="d-none">
@@ -153,10 +114,12 @@
             <div class="card p-4">
                 <div class="row">
                     <div class="col-md-8">
-                        <input type="text" id="searchInput" class="form-control" placeholder="Ürün ismi veya kodu ile ara...">
+                        <input type="text" id="searchInput" class="form-control"
+                            placeholder="Ürün ismi veya kodu ile ara...">
                     </div>
-                    <div class="col-md-4 text-end">
-                        <button class="btn btn-primary" id="navAddProduct"><i class="bi bi-plus-circle me-1"></i> Yeni Ürün Ekle</button>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h1></h1>
+                        <span id="totalProducts" class="badge bg-info fs-5">Toplam Ürün: 0</span>
                     </div>
                 </div>
             </div>
@@ -168,7 +131,10 @@
                                 <th>Ürün Resmi</th>
                                 <th>Ürün İsmi</th>
                                 <th>Ürün Kodu</th>
-                                <th>Fiyat</th>
+                                <th>Liste Fiyatı</th>
+                                <th>İndirimli Fiyat</th>
+                                <th>Mevcut Stok</th>
+                                <th>Satılabilir</th>
                                 <th>QR Kod</th>
                                 <th class="text-end">İşlemler</th>
                             </tr>
@@ -179,8 +145,8 @@
                     </table>
                 </div>
             </div>
+            <button id="loadMoreButton" class="btn btn-primary mt-3 d-none">Daha Fazla</button>
         </div>
-
         <!-- Yeni Ürün Ekleme / Düzenleme Formu -->
         <div id="addProductForm" class="d-none">
             <h1 class="mb-4" id="formTitle">Yeni Ürün Oluştur</h1>
@@ -197,12 +163,17 @@
                             <input type="text" id="productCode" class="form-control" placeholder="Ürün Kodu">
                         </div>
                         <div class="mb-3">
-                            <label for="productPrice" class="form-label">Ürün Fiyatı:</label>
-                            <input type="text" id="productPrice" class="form-control" placeholder="Ürün Fiyatı">
+                            <label for="listPrice" class="form-label">Liste Fiyatı:</label>
+                            <input type="text" id="listPrice" class="form-control" placeholder="Liste Fiyatı">
                         </div>
-
-                        <label for="productLink" class="form-label">Ürün Linki (Opsiyonel):</label>
-    <input type="text" id="productLink" class="form-control" placeholder="Ürün Linki">
+                        <div class="mb-3">
+                            <label for="discountedPrice" class="form-label">Satış Fiyatı:</label>
+                            <input type="text" id="discountedPrice" class="form-control" placeholder="İndirimli Satış Fiyatı">
+                        </div>
+                        <div class="mb-3">
+                            <label for="productLink" class="form-label">Ürün Linki (Opsiyonel):</label>
+                            <input type="text" id="productLink" class="form-control" placeholder="Ürün Linki">
+                        </div>
                         <div class="mb-3">
                             <label for="productImages" class="form-label">Ürün Resimleri:</label>
                             <input type="file" id="productImages" class="form-control" multiple>
@@ -233,7 +204,7 @@
                         <div class="phone-preview mt-3">
                             <div class="phone-screen">
                                 <!-- Ürün sayfası önizlemesi -->
-                                <div id="previewProductPage">
+                                <div id="previewProductPage"><
                                     <!-- Ürün sayfasının HTML yapısı -->
                                     <header class="header bg-dark text-white p-3">
                                         <div class="d-flex justify-content-between align-items-center">
@@ -269,7 +240,10 @@
                                             <div class="col-12 mt-3">
                                                 <div class="product-details">
                                                     <h2 id="previewProductName">Ürün Adı</h2>
-                                                    <div class="price h4 text-success" id="previewProductPrice">0.00 TL</div>
+                                                    <div class="price h4 text-success" id="previewProductPrice">
+                                                        <span id="previewDiscountedPrice">0.00 TL</span>
+                                                        <small class="text-muted"><del id="previewListPrice">0.00 TL</del></small>
+                                                    </div>
                                                     <div class="features mt-3" id="previewProductFeatures">
                                                         <h5>Ürün Özellikleri</h5>
                                                         <table class="table table-sm">
@@ -292,7 +266,16 @@
                                         </div>
                                     </div>
                                     <footer class="footer">
-                                        <p>© 2023 Şirket İsmi. Tüm hakları saklıdır.</p>
+                                        <p>© 2024 Tatarlı Seramik. Tüm hakları saklıdır.</p>
+                                        <div class="contact-info">
+                                            <p><i class="fas fa-phone-alt"></i> <strong>Tel:</strong> +90(212)6093595</p>
+                                            <p><i class="fas fa-mobile-alt"></i> <strong>Gsm:</strong> +90(530)9612700</p>
+                                            <p><i class="fas fa-envelope"></i> <strong>Mail:</strong> satis@tatarli.com.tr</p>
+                                        </div>
+                                        <!-- Mevcut Stok ve Satılabilir Miktar -->
+                                        <div class="stock-info mt-2">
+                                            <p><small><span id="stockInfo">Yükleniyor...</span></small></p>
+                                        </div>
                                     </footer>
                                 </div>
                             </div>
@@ -300,51 +283,90 @@
                     </div>
                 </div>
                 <!-- Etiket Önizleme -->
-                <div class="label-preview mt-4">
-                    <h4>Etiket Önizleme</h4>
-                    <div id="labelContainer" class="text-center">
-                        <!-- Etiket İçeriği -->
-                        <div id="labelContent" class="d-inline-block p-3" style="border: 1px solid #ccc; border-radius: 5px;">
-                            <div class="label">
-                                <div class="label-top-left text-start">
-                                    <div class="company-name h5">Tatarlı Seramik</div>
-                                    <div class="product-code">Ürün Kodu: <span id="labelProductCode">12345</span></div>
-                                    <div class="product-name">Adı: <span id="labelProductName">Ürün Adı</span></div>
-                                </div>
-                                <div class="label-bottom-right text-end mt-3">
-                                    <div class="qr-border">
-                                        <div id="labelQRCode"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <button id="printLabelBtn" class="btn btn-primary mt-3"><i class="bi bi-printer me-1"></i> Etiketi Yazdır</button>
-                    </div>
+<!-- Etiket Önizleme -->
+<!-- Etiket Önizleme -->
+<div class="label-preview mt-4">
+    <h4>Etiket Önizleme</h4>
+    <div id="labelContainer" class="text-center">
+        <!-- Etiket İçeriği -->
+        <div id="labelContent" class="d-inline-block p-3">
+            <div class="label" id="labelElement">
+                <!-- Üst Kısım (Header) -->
+                <div class="label-header">
+                    <div class="company-name">TATARLI SERAMIK</div>
                 </div>
+                <!-- Çizgi -->
+                <hr class="section-divider">
+                <!-- Orta Kısım (Ürün Bilgileri) -->
+                <div class="label-middle">
+                    <div class="product-code"><span id="labelProductCode">12345</span></div>
+                    <div class="product-name"><span id="labelProductName">Ürün Adı</span></div>
+                </div>
+                <!-- Çizgi -->
+                <hr class="section-divider">
+                <!-- Alt Kısım (QR Kod ve Yönlendirme) -->
+                <div class="label-footer">
+                    <div class="scan-text">Ürün detayları için okut</div>
+                    <div class="qr-code" id="labelQRCode"></div>
+                </div>
+            </div>
+        </div>
+        <button id="printLabelBtn" class="btn btn-primary mt-3"><i class="bi bi-printer me-1"></i> Etiketi Yazdır</button>
+        <!-- Etiket Yönünü Değiştirme Butonu -->
+        <button id="toggleOrientationBtn" class="btn btn-secondary mt-3 ms-2"><i class="bi bi-arrows-angle-expand me-1"></i> Etiket Yönünü Değiştir</button>
+    </div>
+</div>
+
+
                 <!-- QR Kodunu Göster -->
                 <div id="qrcode" class="text-center mt-4"></div>
             </div>
         </div>
 
         <!-- Excel Dosyası Yükleme Sayfası -->
-<!-- Excel Dosyası Yükleme Sayfası -->
-<div id="excelUploadPage" class="d-none">
-    <h1 class="mb-4">Fiyat Güncelle</h1>
-    <div class="card p-4">
-        <div class="mb-3">
-            <label for="excelFileInput" class="form-label">Excel Dosyası Yükle (ADI, KODU, FİYAT):</label>
-            <input type="file" id="excelFileInput" accept=".xls,.xlsx" class="form-control">
-        </div>
-        <!-- Yükleme Progress Bar -->
-        <div class="progress mt-3 d-none" id="excelUploadProgress">
-            <div class="progress-bar" role="progressbar" style="width: 0%;" id="excelProgressBar">0%</div>
-        </div>
-        <button type="button" id="uploadExcelBtn" class="btn btn-success mt-3">
-            <i class="bi bi-upload me-1"></i> Yükle ve Güncelle
-        </button>
-    </div>
-</div>
+        <div class="container mt-4" id="content">
 
+            <!-- Excel Dosyası Yükleme Sayfası -->
+            <div id="excelUploadPage" class="d-none">
+                <h1 class="mb-4">Fiyat/Stok Güncelle</h1>
+                <div class="card p-4">
+                    <div class="mb-3">
+                        <label for="excelFileInput" class="form-label">Excel Dosyası Yükle:</label>
+                        <input type="file" id="excelFileInput" accept=".xls,.xlsx" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label for="productCodeColumnName" class="form-label">Ürün Kodu Sütun Adı:</label>
+                        <input type="text" id="productCodeColumnName" class="form-control" placeholder="Örneğin: KODU">
+                    </div>
+                    <div class="mb-3">
+                        <label for="columnMapping" class="form-label">Excel Sütun Eşleştirmesi:</label>
+                        <p>Lütfen güncellemek istediğiniz alanları ve Excel'deki sütun isimlerini belirtin.</p>
+                        <div id="columnMapping">
+                            <div class="row mb-2">
+                                <div class="col-md-6">
+                                    <select class="form-select update-field">
+                                        <option value="listPrice">Liste Fiyatı</option>
+                                        <option value="discountedPrice">İndirimli Fiyat</option>
+                                        <option value="stock">Mevcut Stok</option>
+                                        <option value="saleable">Satılabilir</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control excel-column-name" placeholder="Excel Sütun İsmi">
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" id="addMappingBtn" class="btn btn-outline-secondary mt-2"><i class="bi bi-plus-lg me-1"></i> Alan Ekle</button>
+                    </div>
+                    <!-- Yükleme Progress Bar -->
+                    <div class="progress mt-3 d-none" id="excelUploadProgress">
+                        <div class="progress-bar" role="progressbar" style="width: 0%;" id="excelProgressBar">0%</div>
+                    </div>
+                    <button type="button" id="uploadExcelBtn" class="btn btn-success mt-3">
+                        <i class="bi bi-upload me-1"></i> Yükle ve Güncelle
+                    </button>
+                </div>
+            </div>
 
         <!-- Ayarlar Sayfası -->
         <div id="settingsPage" class="d-none">
@@ -368,8 +390,9 @@
 
     </div>
 
+    
+
     <!-- Firebase ve Uygulama Kodları -->
-    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-storage-compat.js"></script>
@@ -381,5 +404,14 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Uygulama JS Dosyası -->
     <script src="app.js"></script>
+    <script>
+        // Admin Paneli Giriş Kontrolü
+        firebase.auth().onAuthStateChanged((user) => {
+            if (!user) {
+                // Kullanıcı giriş yapmamışsa, giriş sayfasına yönlendir
+                window.location.href = 'login.html'; // Giriş sayfanızın doğru URL'sini yazın
+            }
+        });
+    </script>
 </body>
 </html>
