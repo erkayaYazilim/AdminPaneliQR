@@ -24,7 +24,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
     <!-- Özel Stil -->
-
+    
    
 
 </head>
@@ -53,6 +53,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#" id="navExcelUpload">
                             <i class="bi bi-file-earmark-spreadsheet me-1"></i> Fiyat/Stok Güncelle
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="navPrintLabels">
+                            <i class="bi bi-printer me-1"></i> Etiket Yazdır
                         </a>
                     </li>
                     <li class="nav-item">
@@ -147,6 +152,39 @@
             </div>
             <button id="loadMoreButton" class="btn btn-primary mt-3 d-none">Daha Fazla</button>
         </div>
+        <!-- Etiket Yazdırma Sayfası -->
+<!-- Etiket Yazdırma Sayfası -->
+<div id="printLabelsPage" class="d-none">
+    <h1 class="mb-4">Etiket Yazdır</h1>
+    <div class="card p-4">
+        <div class="mb-3 d-flex">
+            <input type="text" id="labelSearchInput" class="form-control me-2" placeholder="Ürün ismi ile ara...">
+            <button id="downloadExcelBtn" class="btn btn-success">
+                <i class="bi bi-download me-1"></i> Excel Olarak İndir
+            </button>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle" id="labelProductsTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>Seç</th>
+                        <th>Ürün Resmi</th>
+                        <th>Ürün İsmi</th>
+                        <th>Ürün Kodu</th>
+                        <th>Satış Fiyatı</th>
+                        <th>Liste Fiyatı</th>
+                        <!-- Ürün Linki sütununu kaldırdık -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Ürünler dinamik olarak yüklenecek -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
         <!-- Yeni Ürün Ekleme / Düzenleme Formu -->
         <div id="addProductForm" class="d-none">
             <h1 class="mb-4" id="formTitle">Yeni Ürün Oluştur</h1>
@@ -402,6 +440,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <!-- Bootstrap JS ve Bağımlılıkları -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- XLSX.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+
     <!-- Uygulama JS Dosyası -->
     <script src="app.js"></script>
     <script>

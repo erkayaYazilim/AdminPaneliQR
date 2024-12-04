@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('navExcelUpload').addEventListener('click', showExcelUploadPage);
 
     document.getElementById('navViewAllProducts').addEventListener('click', showAllProductsPage);
-
+    document.getElementById('navPrintLabels').addEventListener('click', showPrintLabelsPage);
     // Arama İşlevi
     document.getElementById('searchInput').addEventListener('input', searchProducts);
 
@@ -680,7 +680,7 @@ function searchProducts() {
         productsTableBody.appendChild(tr);
 
         // QR kodu oluştur ve img etiketi içine yerleştir
-        const qrData = `https://yourwebsite.com/user.html?id=${product.key}`;
+        const qrData = `https://erkayayazilim.github.io/qrcode/user.html?id=${product.Key}`;
         const tempDiv = document.createElement('div');
         new QRCode(tempDiv, {
             text: qrData,
@@ -1078,5 +1078,125 @@ function loadAllProductsWithProgress() {
             console.error('Hata:', error);
             allProductsProgress.style.display = 'none';
             alert('Ürünler yüklenirken bir hata oluştu.');
+        });
+}
+function showPrintLabelsPage() {
+    hideAllSections();
+    document.getElementById('printLabelsPage').classList.remove('d-none');
+    setActiveNav('navPrintLabels');
+    loadProductsForLabelPrinting();
+}
+function hideAllSections() {
+    document.getElementById('dashboard').classList.add('d-none');
+    document.getElementById('addProductForm').classList.add('d-none');
+    document.getElementById('settingsPage').classList.add('d-none');
+    document.getElementById('excelUploadPage').classList.add('d-none');
+    document.getElementById('allProductsPage').classList.add('d-none');
+    document.getElementById('printLabelsPage').classList.add('d-none'); // Yeni eklenen sayfa
+}function loadProductsForLabelPrinting() {
+    const labelProductsTableBody = document.querySelector('#labelProductsTable tbody');
+    labelProductsTableBody.innerHTML = '';
+
+    // Tüm ürünleri yükleyin
+    database.ref('products').once('value')
+        .then(snapshot => {
+            const products = [];
+            snapshot.forEach(childSnapshot => {
+                const productKey = childSnapshot.key;
+                const productData = childSnapshot.val();
+                products.push({ key: productKey, ...productData });
+            });
+
+            // Tabloya ürünleri ekleyin
+            products.forEach(product => {
+                const imageSrc = (product.images && product.images.length > 0) ? product.images[0] : '';
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><input type="checkbox" class="product-checkbox" data-product-key="${product.key}"></td>
+                    <td><img src="${imageSrc}" alt="Ürün Resmi" style="width: 50px; height: 50px; object-fit: cover;"></td>
+                    <td>${product.productName}</td>
+                    <td>${product.productCode || ''}</td>
+                    <td>${product.discountedPrice || ''} TL</td>
+                    <td>${product.listPrice || ''} TL</td>
+                `;
+                labelProductsTableBody.appendChild(tr);
+            });
+
+            // Arama işlevi
+            document.getElementById('labelSearchInput').addEventListener('input', function () {
+                const searchValue = this.value.toLowerCase().trim();
+                const rows = labelProductsTableBody.querySelectorAll('tr');
+                rows.forEach(row => {
+                    const productName = row.children[2].textContent.toLowerCase();
+                    if (productName.includes(searchValue)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        })
+        .catch(error => {
+            console.error('Hata:', error);
+        });
+}
+
+// Excel indirme butonu için event listener
+document.getElementById('downloadExcelBtn').addEventListener('click', downloadSelectedProductsAsExcel);
+
+function downloadSelectedProductsAsExcel() {
+    const selectedProductKeys = [];
+    const checkboxes = document.querySelectorAll('.product-checkbox');
+    checkboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+            selectedProductKeys.push(checkbox.getAttribute('data-product-key'));
+        }
+    });
+
+    if (selectedProductKeys.length === 0) {
+        alert('Lütfen en az bir ürün seçin.');
+        return;
+    }
+
+    // Seçilen ürünlerin verilerini al
+    const promises = selectedProductKeys.map(key => {
+        return database.ref('products/' + key).once('value')
+            .then(snapshot => {
+                const data = snapshot.val();
+                // QR kod linkini oluştur
+                const qrLink = `https://erkayayazilim.github.io/qrcode/user.html?id=${key}`;
+                return {
+                    'Ürün Kodu': data.productCode || '',
+                    'Ürün İsmi': data.productName || '',
+                    'Satış Fiyatı': data.discountedPrice ? `${data.discountedPrice} TL` : '',
+                    'Liste Fiyatı': data.listPrice ? `${data.listPrice} TL` : '',
+                    'Ürün Linki': qrLink
+                };
+            });
+    });
+
+    Promise.all(promises)
+        .then(productsData => {
+            // XLSX.js kullanarak Excel dosyası oluştur
+            const worksheet = XLSX.utils.json_to_sheet(productsData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Ürünler');
+
+            // Excel dosyasını indirin
+            const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+            const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'urunler.xlsx';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        })
+        .catch(error => {
+            console.error('Hata:', error);
+            alert('Excel dosyası oluşturulurken bir hata oluştu.');
         });
 }
