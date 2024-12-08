@@ -8,162 +8,267 @@ const firebaseConfig = {
     messagingSenderId: "236478826016",
     appId: "1:236478826016:web:34a9fa5b51c69f63045e45",
     measurementId: "G-0LY6WH95VM"
-  };
-
-// Firebase'i Başlat
+};
 
 // Firebase'i Başlat
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const storage = firebase.storage();
 
-// Sayfa Yüklenince Başlangıç Fonksiyonu
-// Sayfa Yüklenince Başlangıç Fonksiyonu
-document.addEventListener('DOMContentLoaded', () => {
-    showDashboard();
+// Global Değişkenler
+let allProducts = []; 
+let featureCount = 0;
+let isEditing = false;
+let editingProductKey = '';
+let existingProductData = {};
+window.excelData = null;
 
-    // Menü Barı Event Listeners
-    document.getElementById('navDashboard').addEventListener('click', showDashboard);
+document.addEventListener('DOMContentLoaded', () => {
+    loadAllProducts();
+
+    // Menü Eventleri
     document.getElementById('navAddProduct').addEventListener('click', () => {
         clearProductForm();
         showAddProductForm();
     });
     document.getElementById('navSettings').addEventListener('click', showSettingsPage);
     document.getElementById('navExcelUpload').addEventListener('click', showExcelUploadPage);
-
     document.getElementById('navViewAllProducts').addEventListener('click', showAllProductsPage);
-    document.getElementById('navPrintLabels').addEventListener('click', showPrintLabelsPage);
-    // Arama İşlevi
-    document.getElementById('searchInput').addEventListener('input', searchProducts);
 
-    // Excel Dosyası Yükleme Butonu
-    document.getElementById('excelFileInput').addEventListener('change', readExcelFile);
-    document.getElementById('addMappingBtn').addEventListener('click', addMappingField);
-    document.getElementById('uploadExcelBtn').addEventListener('click', handleExcelUpload);
+    const allProductsSearchInput = document.getElementById('allProductsSearchInput');
+    if (allProductsSearchInput) {
+        allProductsSearchInput.addEventListener('input', searchAllProducts);
+    }
 
-    // Yeni Ürün Ekleme
-    document.getElementById('addFeatureBtn').addEventListener('click', addFeature);
-    document.getElementById('saveBtn').addEventListener('click', saveProduct);
-    document.getElementById('cancelBtn').addEventListener('click', () => {
-        clearProductForm();
-        showDashboard();
-    });
+    const excelFileInput = document.getElementById('excelFileInput');
+    if (excelFileInput) {
+        excelFileInput.addEventListener('change', readExcelFile);
+    }
 
-    // Canlı Önizleme Güncellemeleri
-    document.getElementById('productName').addEventListener('input', updatePreview);
-    document.getElementById('productCode').addEventListener('input', updatePreview);
-    document.getElementById('listPrice').addEventListener('input', updatePreview);
-    document.getElementById('discountedPrice').addEventListener('input', updatePreview);
-    document.getElementById('productDescription').addEventListener('input', updatePreview);
-    document.getElementById('productImages').addEventListener('change', updateImagePreview);
+    const addMappingBtn = document.getElementById('addMappingBtn');
+    if (addMappingBtn) {
+        addMappingBtn.addEventListener('click', addMappingField);
+    }
 
-    // Etiketi Yazdırma
-    document.getElementById('printLabelBtn').addEventListener('click', printLabel);
+    const uploadExcelBtn = document.getElementById('uploadExcelBtn');
+    if (uploadExcelBtn) {
+        uploadExcelBtn.addEventListener('click', handleExcelUpload);
+    }
 
-    // Ayarları Kaydetme
-    document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
+    const addFeatureBtn = document.getElementById('addFeatureBtn');
+    if (addFeatureBtn) {
+        addFeatureBtn.addEventListener('click', addFeature);
+    }
 
-    // Ürünleri Belleğe Yükle (Görünür Listeye Eklemiyoruz)
-    loadAllProducts();
+    const saveBtn = document.getElementById('saveBtn');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', saveProduct);
+    }
 
-    // Toplam ürün sayısını güncelle
-    updateTotalProductCount();
+    const cancelBtn = document.getElementById('cancelBtn');
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+            clearProductForm();
+            showAllProductsPage();
+        });
+    }
 
-    // Ayarları Yükle
+    const productNameInput = document.getElementById('productName');
+    if (productNameInput) {
+        productNameInput.addEventListener('input', updatePreview);
+    }
+    const productCodeInput = document.getElementById('productCode');
+    if (productCodeInput) {
+        productCodeInput.addEventListener('input', updatePreview);
+    }
+    const listPriceInput = document.getElementById('listPrice');
+    if (listPriceInput) {
+        listPriceInput.addEventListener('input', updatePreview);
+    }
+    const discountedPriceInput = document.getElementById('discountedPrice');
+    if (discountedPriceInput) {
+        discountedPriceInput.addEventListener('input', updatePreview);
+    }
+    const productDescriptionInput = document.getElementById('productDescription');
+    if (productDescriptionInput) {
+        productDescriptionInput.addEventListener('input', updatePreview);
+    }
+    const productImagesInput = document.getElementById('productImages');
+    if (productImagesInput) {
+        productImagesInput.addEventListener('change', updateImagePreview);
+    }
+
+    const downloadLabelBtn = document.getElementById('downloadLabelBtn');
+    if (downloadLabelBtn) {
+        downloadLabelBtn.addEventListener('click', downloadLabelAsPNG);
+    }
+
+    const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+    if (saveSettingsBtn) {
+        saveSettingsBtn.addEventListener('click', saveSettings);
+    }
+
     loadSettings();
-
-    // Canlı Önizleme için Ayarları Yükle
     loadSettingsForPreview();
 
-    
+    // Admin Paneli Giriş Kontrolü
+    firebase.auth().onAuthStateChanged((user) => {
+        if (!user) {
+            window.location.href = 'login.html';
+        }
+    });
 });
-
-// Sayfa Gösterim Fonksiyonları
-function showDashboard() {
-    hideAllSections();
-    document.getElementById('dashboard').classList.remove('d-none');
-    setActiveNav('navDashboard');
-}
-
-function showAddProductForm() {
-    hideAllSections();
-    document.getElementById('addProductForm').classList.remove('d-none');
-    setActiveNav('navAddProduct');
-}
-
-function showSettingsPage() {
-    hideAllSections();
-    document.getElementById('settingsPage').classList.remove('d-none');
-    setActiveNav('navSettings');
-}
-
-function showExcelUploadPage() {
-    hideAllSections();
-    document.getElementById('excelUploadPage').classList.remove('d-none');
-    setActiveNav('navExcelUpload');
-}
-
-function hideAllSections() {
-    document.getElementById('dashboard').classList.add('d-none');
-    document.getElementById('addProductForm').classList.add('d-none');
-    document.getElementById('settingsPage').classList.add('d-none');
-    document.getElementById('excelUploadPage').classList.add('d-none');
-    document.getElementById('allProductsPage').classList.add('d-none');
-}
 
 function setActiveNav(navId) {
     document.querySelectorAll('.navbar .nav-link').forEach(link => {
         link.classList.remove('active');
     });
-    document.getElementById(navId).classList.add('active');
+    const activeNav = document.getElementById(navId);
+    if (activeNav) {
+        activeNav.classList.add('active');
+    }
 }
 
-// Ürün Ekleme İşlemleri
-let featureCount = 0;
-let isEditing = false;
-let editingProductKey = '';
-let existingProductData = {};
+function hideAllSections() {
+    const sections = ['addProductForm', 'settingsPage', 'excelUploadPage', 'allProductsPage'];
+    sections.forEach(id => {
+        const section = document.getElementById(id);
+        if (section) {
+            section.classList.add('d-none');
+        }
+    });
+}
+
+function showAddProductForm() {
+    hideAllSections();
+    const addProductForm = document.getElementById('addProductForm');
+    if (addProductForm) {
+        addProductForm.classList.remove('d-none');
+    }
+    setActiveNav('navAddProduct');
+}
+
+function showSettingsPage() {
+    hideAllSections();
+    const settingsPage = document.getElementById('settingsPage');
+    if (settingsPage) {
+        settingsPage.classList.remove('d-none');
+    }
+    setActiveNav('navSettings');
+}
+
+function showExcelUploadPage() {
+    hideAllSections();
+    const excelUploadPage = document.getElementById('excelUploadPage');
+    if (excelUploadPage) {
+        excelUploadPage.classList.remove('d-none');
+    }
+    setActiveNav('navExcelUpload');
+}
+
+function showAllProductsPage() {
+    hideAllSections();
+    const allProductsPage = document.getElementById('allProductsPage');
+    if (allProductsPage) {
+        allProductsPage.classList.remove('d-none');
+    }
+    setActiveNav('navViewAllProducts');
+    loadAllProductsWithProgress();
+}
 
 function clearProductForm() {
-    // Form alanlarını sıfırlayın
-    document.getElementById('productName').value = '';
-    document.getElementById('productLink').value = '';
-    document.getElementById('productCode').value = '';
-    document.getElementById('listPrice').value = '';
-    document.getElementById('discountedPrice').value = '';
-    document.getElementById('productDescription').value = '';
-    document.getElementById('productImages').value = '';
-    // Özellikleri temizleyin
-    document.getElementById('featuresContainer').innerHTML = '';
+    const formFields = ['productName', 'productLink', 'productCode', 'listPrice', 'discountedPrice', 'productDescription', 'productImages'];
+    formFields.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.value = '';
+        }
+    });
+
+    const featuresContainer = document.getElementById('featuresContainer');
+    if (featuresContainer) {
+        featuresContainer.innerHTML = '';
+    }
     featureCount = 0;
-    // Önizlemeyi sıfırlayın
-    document.getElementById('previewCarouselInner').innerHTML = '';
-    document.getElementById('previewFeaturesTable').innerHTML = '';
-    document.getElementById('previewProductLink').innerHTML = '';
-    document.getElementById('previewProductName').textContent = 'Ürün Adı';
-    document.getElementById('previewProductPrice').innerHTML =
-        '<span id="previewDiscountedPrice">0.00 TL</span> <small class="text-muted"><del id="previewListPrice">0.00 TL</del></small>';
-    document.getElementById('previewProductDescription').textContent =
-        'Ürün açıklaması burada görünecek.';
-    // Durumları sıfırlayın
+
+    const previewCarouselInner = document.getElementById('previewCarouselInner');
+    if (previewCarouselInner) {
+        previewCarouselInner.innerHTML = '';
+    }
+    const previewFeaturesTable = document.getElementById('previewFeaturesTable');
+    if (previewFeaturesTable) {
+        previewFeaturesTable.innerHTML = '';
+    }
+    const previewProductLink = document.getElementById('previewProductLink');
+    if (previewProductLink) {
+        previewProductLink.innerHTML = '';
+    }
+    const previewProductName = document.getElementById('previewProductName');
+    if (previewProductName) {
+        previewProductName.textContent = 'Ürün Adı';
+    }
+    const previewDiscountedPrice = document.getElementById('previewDiscountedPrice');
+    if (previewDiscountedPrice) {
+        previewDiscountedPrice.textContent = '0.00 TL';
+    }
+    const previewListPrice = document.getElementById('previewListPrice');
+    if (previewListPrice) {
+        previewListPrice.textContent = '';
+    }
+    const previewProductDescription = document.getElementById('previewProductDescription');
+    if (previewProductDescription) {
+        previewProductDescription.textContent = 'Ürün açıklaması burada görünecek.';
+    }
+
     isEditing = false;
     editingProductKey = '';
     existingProductData = {};
-    document.getElementById('formTitle').textContent = 'Yeni Ürün Oluştur';
-    document.getElementById('saveBtn').innerHTML =
-        '<i class="bi bi-save me-1"></i> Kaydet ve QR Kod Oluştur';
-    document.getElementById('qrcode').innerHTML = '';
-    document.getElementById('newProductBtn')?.remove();
-    // Etiket önizlemesini sıfırlayın
-    document.getElementById('labelProductName').textContent = 'Ürün Adı';
-    document.getElementById('labelProductCode').textContent = '12345';
-    document.getElementById('labelQRCode').innerHTML = '';
-}
 
+    const formTitle = document.getElementById('formTitle');
+    if (formTitle) {
+        formTitle.textContent = 'Yeni Ürün Oluştur';
+    }
+    const saveBtn = document.getElementById('saveBtn');
+    if (saveBtn) {
+        saveBtn.innerHTML = '<i class="bi bi-save me-1"></i> Kaydet ve QR Kod Oluştur';
+    }
+
+    const qrcodeElement = document.getElementById('qrcode');
+    if (qrcodeElement) {
+        qrcodeElement.innerHTML = '';
+    }
+    const newProductBtn = document.getElementById('newProductBtn');
+    if (newProductBtn) {
+        newProductBtn.remove();
+    }
+
+    const labelProductName = document.getElementById('labelProductName');
+    if (labelProductName) {
+        labelProductName.textContent = 'Ürün Adı';
+    }
+    const labelProductCode = document.getElementById('labelProductCode');
+    if (labelProductCode) {
+        labelProductCode.textContent = 'Ürün Kodu';
+    }
+    const labelSalePrice = document.getElementById('labelSalePrice');
+    if (labelSalePrice) {
+        labelSalePrice.textContent = '0.00 TL (KDV DAHİL)';
+    }
+    const labelListPrice = document.getElementById('labelListPrice');
+    if (labelListPrice) {
+        labelListPrice.innerHTML = 'Liste Fiyatı: <strong>0.00 TL</strong> + KDV';
+    }
+    const labelQRCode = document.getElementById('labelQRCode');
+    if (labelQRCode) {
+        labelQRCode.innerHTML = '';
+    }
+}
 
 function addFeature() {
     featureCount++;
     const featuresContainer = document.getElementById('featuresContainer');
+    if (!featuresContainer) return;
+
     const featureDiv = document.createElement('div');
     featureDiv.classList.add('feature', 'card', 'p-3', 'mb-3');
     featureDiv.setAttribute('data-feature-id', featureCount);
@@ -189,200 +294,548 @@ function addFeature() {
     `;
     featuresContainer.appendChild(featureDiv);
 
-    // Özellik Kaldırma Butonu
-    featureDiv.querySelector('.remove-feature-btn').addEventListener('click', () => {
-        featureDiv.remove();
-        updateFeaturePreview();
-    });
+    const removeFeatureBtn = featureDiv.querySelector('.remove-feature-btn');
+    if (removeFeatureBtn) {
+        removeFeatureBtn.addEventListener('click', () => {
+            featureDiv.remove();
+            updateFeaturePreview();
+            updateLabel();
+        });
+    }
 
-    // Canlı Önizleme Güncelleme
-    featureDiv.querySelectorAll('input').forEach(input => {
-        input.addEventListener('input', updateFeaturePreview);
+    const featureInputs = featureDiv.querySelectorAll('input');
+    featureInputs.forEach(input => {
+        input.addEventListener('input', () => {
+            updateFeaturePreview();
+            updateLabel();
+        });
     });
 }
 
+// Etiket Güncelleme Fonksiyonu
+function updateLabel() {
+    const productName = document.getElementById('productName')?.value.trim() || 'Ürün Adı';
+    const productCode = document.getElementById('productCode')?.value.trim() || 'Ürün Kodu';
+    const listPriceVal = parseFloat(document.getElementById('listPrice')?.value.trim().replace(',', '.')) || 0.00;
+    const discountedPriceVal = parseFloat(document.getElementById('discountedPrice')?.value.trim().replace(',', '.')) || 0.00;
 
+    // Fiyat formatlamak için NumberFormat kullanımı
+    const formatter = new Intl.NumberFormat('tr-TR', {
+        style: 'currency',
+        currency: 'TRY',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+
+    const formattedListPrice = formatter.format(listPriceVal).replace('', '');
+    const formattedDiscountedPrice = formatter.format(discountedPriceVal).replace('', '');
+
+    // Etiketleri güncelle
+    const labelProductName = document.getElementById('labelProductName');
+    if (labelProductName) labelProductName.textContent = productName;
+
+    const labelProductCode = document.getElementById('labelProductCode');
+    if (labelProductCode) labelProductCode.textContent = productCode;
+
+    const labelSalePrice = document.getElementById('labelSalePrice');
+    if (labelSalePrice) labelSalePrice.textContent = `${formattedDiscountedPrice} (KDV DAHİL)`;
+
+    const labelListPrice = document.getElementById('labelListPrice');
+    if (labelListPrice) labelListPrice.innerHTML = `Liste Fiyatı: <strong>${formattedListPrice}</strong>  + KDV`;
+}
+
+
+
+// Canlı Önizleme Güncelleme Fonksiyonu
 function updatePreview() {
-    // Ürün Adı ve Fiyatları güncelle
-    const productName = document.getElementById('productName').value || 'Ürün Adı';
-    const listPrice = document.getElementById('listPrice').value
-        ? document.getElementById('listPrice').value + ' TL'
-        : '';
-    const discountedPrice = document.getElementById('discountedPrice').value
-        ? document.getElementById('discountedPrice').value + ' TL'
-        : '0.00 TL';
+    const productName = document.getElementById('productName')?.value || 'Ürün Adı';
+    const listPriceVal = document.getElementById('listPrice')?.value.trim();
+    const discountedPriceVal = document.getElementById('discountedPrice')?.value.trim();
+    const listPrice = listPriceVal ? listPriceVal + ' TL' : '';
+    const discountedPrice = discountedPriceVal ? discountedPriceVal + ' TL' : '0.00 TL';
 
-    document.getElementById('previewProductName').textContent = productName;
-    document.getElementById('previewDiscountedPrice').textContent = discountedPrice;
-    document.getElementById('previewListPrice').textContent = listPrice;
+    const previewProductName = document.getElementById('previewProductName');
+    if (previewProductName) previewProductName.textContent = productName;
 
-    document.getElementById('previewProductDescription').textContent =
-        document.getElementById('productDescription').value ||
-        'Ürün açıklaması burada görünecek.';
+    const previewDiscountedPrice = document.getElementById('previewDiscountedPrice');
+    if (previewDiscountedPrice) previewDiscountedPrice.textContent = discountedPrice;
 
-    const productLink = document.getElementById('productLink').value.trim();
+    const previewListPrice = document.getElementById('previewListPrice');
+    if (previewListPrice) previewListPrice.textContent = listPrice;
+
+    const productDescription = document.getElementById('productDescription')?.value.trim() || 'Ürün açıklaması burada görünecek.';
+    const previewProductDescription = document.getElementById('previewProductDescription');
+    if (previewProductDescription) previewProductDescription.textContent = productDescription;
+
+    const productLink = document.getElementById('productLink')?.value.trim();
     const previewProductLinkElement = document.getElementById('previewProductLink');
-
-    if (productLink) {
-        previewProductLinkElement.innerHTML = `<a href="${productLink}" target="_blank">Ürüne Git</a>`;
-    } else {
-        previewProductLinkElement.innerHTML = '';
+    if (previewProductLinkElement) {
+        if (productLink) {
+            previewProductLinkElement.innerHTML = `<a href="${productLink}" target="_blank">Ürüne Git</a>`;
+        } else {
+            previewProductLinkElement.innerHTML = '';
+        }
     }
-    // Özellikleri güncelle
+
     updateFeaturePreview();
-
-    // Etiket önizlemesini güncelle
-    document.getElementById('labelProductName').textContent = productName;
-    document.getElementById('labelProductCode').textContent =
-        document.getElementById('productCode').value || 'Ürün Kodu';
-
-    // Etiket QR kodunu güncelle
-    const productKey = isEditing ? editingProductKey : 'new_product';
-    updateLabelQRCode(productKey);
+    updateLabel();
+    updateLabelQRCode(isEditing ? editingProductKey : 'new_product');
 }
 
 function updateLabelQRCode(productKey) {
     const labelQRCodeElement = document.getElementById('labelQRCode');
+    if (!labelQRCodeElement) return;
     labelQRCodeElement.innerHTML = '';
+
     const qrData = `https://erkayayazilim.github.io/qrcode/user.html?id=${productKey}`;
 
     new QRCode(labelQRCodeElement, {
         text: qrData,
-        width: labelQRCodeElement.offsetWidth,
-        height: labelQRCodeElement.offsetHeight,
-        correctLevel: QRCode.CorrectLevel.H
+        width: 350,
+        height: 350,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
     });
 }
 
+function downloadQRCode(productKey) {
+    const qrData = `https://erkayayazilim.github.io/qrcode/user.html?id=${productKey}`;
+    const tempDiv = document.createElement('div');
+    new QRCode(tempDiv, {
+        text: qrData,
+        width: 256,
+        height: 256,
+    });
+    setTimeout(() => {
+        const canvas = tempDiv.querySelector('canvas');
+        if (!canvas) return;
+        const imgData = canvas.toDataURL('image/png');
+        const downloadLink = document.createElement('a');
+        downloadLink.href = imgData;
+        downloadLink.download = 'qrcode.png';
+        downloadLink.click();
+    }, 500);
+}
 
-function printLabel() {
-    // 1. Etiket elementini al (HTML yapısını kopyalayabilmek için)
-    const labelElement = document.getElementById('labelElement');
-    
-    // 2. Etiketin dış HTML kodunu al (bütün etiketi bir string olarak alır)
-    const labelHTML = labelElement.outerHTML;
-    
-    // 3. Etiketin dikey modda olup olmadığını kontrol et
-    const isVertical = labelElement.classList.contains('vertical');
-    
-    // 4. Yazdırma için yeni bir pencere aç
-    const printWindow = window.open('', '', 'width=800,height=600');
-    
-    // 5. Yazdırma penceresinin başlık kısmına HTML ekle
-    printWindow.document.write('<html><head><title>Etiket Yazdır</title>');
-    
-    // 6. CSS stillerini tanımlamak için `<style>` etiketini yaz
-    printWindow.document.write('<style>');
-    
-    // 7. Yazdırma için gerekli CSS stillerini tanımla
-    printWindow.document.write(`
-        @page {
-            size: ${isVertical ? '4.5cm 6cm' : '6cm 4.5cm'};
-            margin: 0;
-        }
-        body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            ${isVertical ? 'transform: rotate(90deg); transform-origin: center center;' : ''}
-        }
-        .label {
-            position: relative;
-            font-family: Arial, sans-serif;
-            width: 6cm;
-            height: 4.5cm;
-            border: 1px solid #dee2e6;
-            background-color: #fff;
-            overflow: hidden;
-        }
-        .label-header {
-            background-color: black;
-            color: white;
-            text-align: center;
-            padding: 0.2cm;
-        }
-        .company-name {
-            font-size: 14px;
-            font-weight: bold;
-        }
-        .section-divider {
-            border: none;
-            border-top: 1px solid #000;
-            margin: 0;
-        }
-        .label-middle {
-            padding: 0.2cm;
-            text-align: left;
-            font-size: 12px;
-        }
-        .product-code,
-        .product-name {
-            margin: 2px 0;
-            font-size: 12px;
-        }
-        .label-footer {
-            position: absolute;
-            bottom: 0.2cm;
-            left: 0.2cm;
-            right: 0.2cm;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .scan-text {
-            font-size: 10px;
-            text-align: left;
-            flex: 1;
-        }
-        .qr-code {
-            width: 2cm;
-            height: 2cm;
-        }
-        #labelQRCode canvas {
-            width: 100% !important;
-            height: 100% !important;
-        }
-    `);
-    
-    // 8. CSS tanımlamasını bitir ve `<style>` etiketini kapat
-    printWindow.document.write('</style></head><body>');
-    
-    // 9. Etiket HTML'sini ekle
-    printWindow.document.write(labelHTML);
-    
-    // 10. HTML dökümünü kapat
-    printWindow.document.write('</body></html>');
-    printWindow.document.close();
-    
-    // 11. Yazdırma penceresini odakla ve yazdır
-    printWindow.onload = function () {
-        printWindow.focus();
-        printWindow.print();
-        printWindow.close();
+function deleteProduct(productKey) {
+    if (confirm('Ürünü silmek istediğinize emin misiniz?')) {
+        database.ref('products/' + productKey).remove()
+            .then(() => {
+                alert('Ürün silindi.');
+                loadAllProductsWithProgress();
+            })
+            .catch(error => {
+                console.error('Hata:', error);
+                alert('Ürün silinirken bir hata oluştu.');
+            });
+    }
+}
+
+function editProduct(productKey) {
+    showAddProductForm();
+    clearProductForm();
+    isEditing = true;
+    editingProductKey = productKey;
+    const formTitle = document.getElementById('formTitle');
+    if (formTitle) formTitle.textContent = 'Ürünü Düzenle';
+    const saveBtn = document.getElementById('saveBtn');
+    if (saveBtn) saveBtn.innerHTML = '<i class="bi bi-save me-1"></i> Güncelle';
+
+    database.ref('products/' + productKey).once('value')
+        .then(snapshot => {
+            const data = snapshot.val();
+            if (data) {
+                existingProductData = data;
+                document.getElementById('productName').value = data.productName;
+                document.getElementById('productCode').value = data.productCode || '';
+                document.getElementById('productLink').value = data.productLink || '';
+                document.getElementById('listPrice').value = data.listPrice || '';
+                document.getElementById('discountedPrice').value = data.discountedPrice || '';
+                document.getElementById('productDescription').value = data.productDescription;
+
+                if (data.features && data.features.length > 0) {
+                    data.features.forEach((feature) => {
+                        addFeature();
+                        const featureId = featureCount;
+                        document.getElementById(`featureCategory${featureId}`).value = feature.category;
+                        document.getElementById(`featureDescription${featureId}`).value = feature.description;
+                    });
+                    updateFeaturePreview();
+                }
+
+                updatePreview();
+                updateLabel();
+                updateImagePreview();
+            }
+        })
+        .catch(error => {
+            console.error('Hata:', error);
+            alert('Ürün yüklenirken bir hata oluştu.');
+        });
+}
+
+function saveSettings() {
+    const email = document.getElementById('settingsEmail')?.value.trim();
+    const phone = document.getElementById('settingsPhone')?.value.trim();
+    const address = document.getElementById('settingsAddress')?.value.trim();
+
+    const settingsData = {
+        email: email,
+        phone: phone,
+        address: address
     };
+
+    database.ref('settings').set(settingsData)
+        .then(() => {
+            alert('Ayarlar kaydedildi.');
+            loadSettingsForPreview();
+        })
+        .catch(error => {
+            console.error('Hata:', error);
+            alert('Ayarlar kaydedilirken bir hata oluştu.');
+        });
 }
 
+function loadSettings() {
+    database.ref('settings').once('value')
+        .then(snapshot => {
+            const data = snapshot.val();
+            if (data) {
+                const settingsEmail = document.getElementById('settingsEmail');
+                const settingsPhone = document.getElementById('settingsPhone');
+                const settingsAddress = document.getElementById('settingsAddress');
+                if (settingsEmail) settingsEmail.value = data.email || '';
+                if (settingsPhone) settingsPhone.value = data.phone || '';
+                if (settingsAddress) settingsAddress.value = data.address || '';
+            }
+        })
+        .catch(error => {
+            console.error('Hata:', error);
+        });
+}
 
+function loadSettingsForPreview() {
+    database.ref('settings').once('value')
+        .then(snapshot => {
+            const data = snapshot.val();
+            if (data) {
+                const previewPhone = document.getElementById('previewPhone');
+                const previewEmail = document.getElementById('previewEmail');
+                if (previewPhone) previewPhone.textContent = data.phone || 'Telefon';
+                if (previewEmail) previewEmail.textContent = data.email || 'E-posta';
+            }
+        })
+        .catch(error => {
+            console.error('Hata:', error);
+        });
+}
 
-// Etiket Yönünü Değiştirme Butonu
-// Etiket Yönünü Değiştirme Butonu
-document.getElementById('toggleOrientationBtn').addEventListener('click', toggleLabelOrientation);
+function loadAllProducts() {
+    database.ref('products').once('value')
+        .then(snapshot => {
+            allProducts = [];
+            snapshot.forEach(childSnapshot => {
+                const productKey = childSnapshot.key;
+                const productData = childSnapshot.val();
+                allProducts.push({ key: productKey, ...productData });
+            });
+            showAllProductsPage();
+        })
+        .catch(error => {
+            console.error('Hata:', error);
+        });
+}
 
-function toggleLabelOrientation() {
+function displayAllProducts(products) {
+    const allProductsTableBody = document.querySelector('#allProductsTable tbody');
+    if (!allProductsTableBody) return;
+    allProductsTableBody.innerHTML = '';
+
+    products.forEach(product => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${product.productName}</td>
+            <td>${product.productCode || ''}</td>
+            <td>${product.listPrice || ''} TL</td>
+            <td>${product.discountedPrice || ''} TL</td>
+            <td>${product.stock || 0}</td>
+            <td>${product.saleable ? 'Evet' : 'Hayır'}</td>
+            <td class="text-end">
+                <button class="btn btn-warning btn-sm me-1" onclick="editProduct('${product.key}')">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="deleteProduct('${product.key}')">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        `;
+        allProductsTableBody.appendChild(tr);
+    });
+}
+
+function loadAllProductsWithProgress() {
+    const allProductsTableBody = document.querySelector('#allProductsTable tbody');
+    if (!allProductsTableBody) return;
+    allProductsTableBody.innerHTML = '';
+
+    const allProductsProgress = document.getElementById('allProductsProgress');
+    const allProductsProgressBar = document.getElementById('allProductsProgressBar');
+    if (allProductsProgress && allProductsProgressBar) {
+        allProductsProgress.style.display = 'block';
+        allProductsProgressBar.style.width = '0%';
+        allProductsProgressBar.textContent = '0%';
+    }
+
+    database.ref('products').once('value')
+        .then(snapshot => {
+            const totalProducts = snapshot.numChildren();
+            let loadedProducts = 0;
+            allProducts = [];
+
+            snapshot.forEach(childSnapshot => {
+                const productKey = childSnapshot.key;
+                const productData = childSnapshot.val();
+                allProducts.push({ key: productKey, ...productData });
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${productData.productName}</td>
+                    <td>${productData.productCode || ''}</td>
+                    <td>${productData.listPrice || ''} TL</td>
+                    <td>${productData.discountedPrice || ''} TL</td>
+                    <td>${productData.stock || 0}</td>
+                    <td>${productData.saleable ? 'Evet' : 'Hayır'}</td>
+                    <td class="text-end">
+                        <button class="btn btn-warning btn-sm me-1" onclick="editProduct('${productKey}')">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteProduct('${productKey}')">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                `;
+                allProductsTableBody.appendChild(tr);
+
+                loadedProducts++;
+                const progress = Math.round((loadedProducts / totalProducts) * 100);
+                if (allProductsProgressBar) {
+                    allProductsProgressBar.style.width = `${progress}%`;
+                    allProductsProgressBar.textContent = `${progress}%`;
+                }
+
+                if (loadedProducts === totalProducts && allProductsProgress) {
+                    allProductsProgress.style.display = 'none';
+                }
+            });
+
+            const allProductsCount = document.getElementById('allProductsCount');
+            if (allProductsCount) {
+                allProductsCount.textContent = `Toplam Ürün: ${allProducts.length}`;
+            }
+        })
+        .catch(error => {
+            console.error('Hata:', error);
+            const allProductsProgress = document.getElementById('allProductsProgress');
+            if (allProductsProgress) {
+                allProductsProgress.style.display = 'none';
+            }
+            alert('Ürünler yüklenirken bir hata oluştu.');
+        });
+}
+
+function searchAllProducts() {
+    const searchValue = document.getElementById('allProductsSearchInput').value.trim().toLowerCase();
+    const filteredProducts = allProducts.filter(product =>
+        (product.productName && product.productName.toLowerCase().includes(searchValue)) ||
+        (product.productCode && product.productCode.toLowerCase().includes(searchValue))
+    );
+    displayAllProducts(filteredProducts);
+    const allProductsCount = document.getElementById('allProductsCount');
+    if (allProductsCount) {
+        allProductsCount.textContent = `Toplam Ürün: ${filteredProducts.length}`;
+    }
+}
+
+function readExcelFile(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            const excelData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+            alert('Excel dosyası başarıyla yüklendi. Güncelleme işlemini başlatmak için "Yükle ve Güncelle" butonuna basın.');
+            window.excelData = excelData;
+        };
+        reader.readAsArrayBuffer(file);
+    }
+}
+
+function addMappingField() {
+    const mappingContainer = document.getElementById('columnMapping');
+    if (!mappingContainer) return;
+
+    const mappingRow = document.createElement('div');
+    mappingRow.classList.add('row', 'mb-2');
+    mappingRow.innerHTML = `
+        <div class="col-md-6">
+            <select class="form-select update-field">
+                <option value="listPrice">Liste Fiyatı</option>
+                <option value="discountedPrice">İndirimli Fiyat</option>
+                <option value="stock">Mevcut Stok</option>
+                <option value="saleable">Satılabilir</option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <input type="text" class="form-control excel-column-name" placeholder="Excel Sütun İsmi">
+        </div>
+    `;
+    mappingContainer.appendChild(mappingRow);
+}
+
+async function handleExcelUpload() {
+    if (!window.excelData) {
+        alert('Lütfen önce bir Excel dosyası yükleyin.');
+        return;
+    }
+
+    try {
+        const productCodeColumnName = document.getElementById('productCodeColumnName')?.value.trim().toUpperCase();
+        if (!productCodeColumnName) {
+            alert('Lütfen ürün kodu sütun adını giriniz.');
+            return;
+        }
+
+        const mappings = [];
+        const mappingRows = document.querySelectorAll('#columnMapping .row');
+        mappingRows.forEach(row => {
+            const field = row.querySelector('.update-field')?.value;
+            const columnName = row.querySelector('.excel-column-name')?.value.trim().toUpperCase();
+            if (field && columnName) {
+                mappings.push({ field, columnName });
+            }
+        });
+
+        if (mappings.length === 0) {
+            alert('Lütfen en az bir alan eşleştirmesi yapın.');
+            return;
+        }
+
+        const headers = window.excelData[0].map(header => header.toString().toUpperCase());
+        const productCodeIndex = headers.indexOf(productCodeColumnName);
+
+        if (productCodeIndex === -1) {
+            alert(`Excel dosyasında "${productCodeColumnName}" sütunu bulunamadı.`);
+            return;
+        }
+
+        mappings.forEach(mapping => {
+            mapping.index = headers.indexOf(mapping.columnName);
+            if (mapping.index === -1) {
+                alert(`Excel dosyasında "${mapping.columnName}" sütunu bulunamadı.`);
+            }
+        });
+
+        const totalRows = window.excelData.length - 1;
+        let processedRows = 0;
+
+        const uploadProgress = document.getElementById('excelUploadProgress');
+        const progressBar = document.getElementById('excelProgressBar');
+        if (uploadProgress && progressBar) {
+            uploadProgress.classList.remove('d-none');
+            uploadProgress.style.display = 'block';
+            progressBar.style.width = '0%';
+            progressBar.textContent = '0%';
+        }
+
+        for (let i = 1; i < window.excelData.length; i++) {
+            const row = window.excelData[i];
+            const productCode = row[productCodeIndex];
+
+            if (productCode) {
+                const snapshot = await database.ref('products').orderByChild('productCode').equalTo(productCode.toString()).once('value');
+                if (snapshot.exists()) {
+                    snapshot.forEach(childSnapshot => {
+                        const updates = {};
+                        mappings.forEach(mapping => {
+                            const value = row[mapping.index];
+                            if (value !== undefined && value !== null && value !== '') {
+                                if (mapping.field === 'saleable') {
+                                    updates[mapping.field] = value.toString().toLowerCase() === 'evet';
+                                } else {
+                                    updates[mapping.field] = value.toString();
+                                }
+                            }
+                        });
+                        childSnapshot.ref.update(updates);
+                    });
+                } else {
+                    console.log(`Ürün kodu "${productCode}" veritabanında bulunamadı.`);
+                }
+            }
+
+            processedRows++;
+            let progress = Math.round((processedRows / totalRows) * 100);
+            if (progressBar) {
+                progressBar.style.width = `${progress}%`;
+                progressBar.textContent = `${progress}%`;
+            }
+        }
+
+        alert('Güncelleme işlemi başarıyla tamamlandı.');
+
+        if (uploadProgress && progressBar) {
+            uploadProgress.classList.add('d-none');
+            uploadProgress.style.display = 'none';
+            progressBar.style.width = '0%';
+            progressBar.textContent = '0%';
+        }
+
+        window.excelData = null;
+        const excelFileInput = document.getElementById('excelFileInput');
+        if (excelFileInput) {
+            excelFileInput.value = '';
+        }
+
+    } catch (error) {
+        console.error('Excel dosyası işlenirken hata oluştu:', error);
+        alert('Excel dosyası işlenirken hata oluştu.');
+        const uploadProgress = document.getElementById('excelUploadProgress');
+        const progressBar = document.getElementById('excelProgressBar');
+        if (uploadProgress && progressBar) {
+            uploadProgress.classList.add('d-none');
+            uploadProgress.style.display = 'none';
+            progressBar.style.width = '0%';
+            progressBar.textContent = '0%';
+        }
+    }
+}
+
+function downloadLabelAsPNG() {
     const labelElement = document.getElementById('labelElement');
-    labelElement.classList.toggle('vertical');
+    if (!labelElement) return;
+    html2canvas(labelElement, {
+        scale: 2,
+        backgroundColor: null
+    }).then(canvas => {
+        const dataURL = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = dataURL;
+        link.download = 'etiket.png';
+        link.click();
+    });
 }
-
-
 
 function updateImagePreview() {
     const previewCarouselInner = document.getElementById('previewCarouselInner');
+    if (!previewCarouselInner) return;
     previewCarouselInner.innerHTML = '';
-    const files = document.getElementById('productImages').files;
+    const files = document.getElementById('productImages')?.files;
 
-    if (files.length > 0) {
+    if (files && files.length > 0) {
         for (let i = 0; i < files.length; i++) {
             const carouselItem = document.createElement('div');
             carouselItem.className = 'carousel-item';
@@ -396,7 +849,6 @@ function updateImagePreview() {
             previewCarouselInner.appendChild(carouselItem);
         }
     } else {
-        // Düzenleme sırasında, eğer yeni resim seçilmezse, mevcut resimleri önizlemede göster
         if (isEditing && existingProductData.images && existingProductData.images.length > 0) {
             existingProductData.images.forEach((imageUrl, index) => {
                 const carouselItem = document.createElement('div');
@@ -411,11 +863,10 @@ function updateImagePreview() {
                 previewCarouselInner.appendChild(carouselItem);
             });
         } else {
-            // Varsayılan resim
             const carouselItem = document.createElement('div');
             carouselItem.className = 'carousel-item active';
             const img = document.createElement('img');
-            img.src = 'placeholder.jpg'; // Varsayılan resim yolu
+            img.src = 'placeholder.jpg';
             img.className = 'd-block w-100';
             carouselItem.appendChild(img);
             previewCarouselInner.appendChild(carouselItem);
@@ -425,6 +876,7 @@ function updateImagePreview() {
 
 function updateFeaturePreview() {
     const previewFeaturesTable = document.getElementById('previewFeaturesTable');
+    if (!previewFeaturesTable) return;
     previewFeaturesTable.innerHTML = '';
     const features = document.querySelectorAll('.feature');
     features.forEach(featureDiv => {
@@ -449,19 +901,17 @@ function updateFeaturePreview() {
 }
 
 async function saveProduct() {
-    const productName = document.getElementById('productName').value.trim();
-    const productCode = document.getElementById('productCode').value.trim();
-    const listPrice = document.getElementById('listPrice').value.trim();
-    const discountedPrice = document.getElementById('discountedPrice').value.trim();
-    const productLink = document.getElementById('productLink').value.trim();
-    const productDescription = document.getElementById('productDescription').value.trim();
-    const productImages = document.getElementById('productImages').files;
+    const productName = document.getElementById('productName')?.value.trim();
+    const productCode = document.getElementById('productCode')?.value.trim();
+    const listPrice = document.getElementById('listPrice')?.value.trim();
+    const discountedPrice = document.getElementById('discountedPrice')?.value.trim();
+    const productLink = document.getElementById('productLink')?.value.trim();
+    const productDescription = document.getElementById('productDescription')?.value.trim();
+    const productImages = document.getElementById('productImages')?.files;
 
     if (productName && productCode && productDescription) {
-        // Ürün anahtarı belirle
         let productKey = isEditing ? editingProductKey : database.ref().child('products').push().key;
 
-        // Veriyi hazırlayın
         const productData = {
             productName: productName,
             productCode: productCode,
@@ -475,17 +925,22 @@ async function saveProduct() {
             saleable: existingProductData.saleable || false
         };
 
+        const uploadProgress = document.getElementById('uploadProgress');
+        const progressBar = document.getElementById('progressBar');
+
         try {
-            // Yükleme Progress Bar'ını göster
-            const uploadProgress = document.getElementById('uploadProgress');
-            const progressBar = document.getElementById('progressBar');
-            uploadProgress.classList.remove('d-none');
-            let totalFiles = productImages.length + document.querySelectorAll('.feature input[type="file"]').length;
+            let totalFiles = (productImages ? productImages.length : 0) + document.querySelectorAll('.feature input[type="file"]').length;
             let uploadedFiles = 0;
 
-            // Ürün resimlerini yükle
-            if (productImages.length > 0) {
-                productData.images = []; // Eski resimleri sıfırla
+            if (uploadProgress && progressBar) {
+                uploadProgress.classList.remove('d-none');
+                uploadProgress.style.display = 'block';
+                progressBar.style.width = '0%';
+                progressBar.textContent = '0%';
+            }
+
+            if (productImages && productImages.length > 0) {
+                productData.images = [];
                 for (let i = 0; i < productImages.length; i++) {
                     const imageFile = productImages[i];
                     const storageRef = storage.ref().child(`products/${productKey}/images/${imageFile.name}`);
@@ -493,22 +948,22 @@ async function saveProduct() {
                     const downloadURL = await snapshot.ref.getDownloadURL();
                     productData.images.push(downloadURL);
 
-                    // Progress Bar'ı güncelle
                     uploadedFiles++;
-                    let progress = Math.round((uploadedFiles / totalFiles) * 100);
-                    progressBar.style.width = progress + '%';
-                    progressBar.textContent = progress + '%';
+                    if (progressBar) {
+                        let progress = Math.round((uploadedFiles / totalFiles) * 100);
+                        progressBar.style.width = `${progress}%`;
+                        progressBar.textContent = `${progress}%`;
+                    }
                 }
             }
 
-            // Özellikleri topla
             const features = document.querySelectorAll('.feature');
             for (let i = 0; i < features.length; i++) {
                 const featureDiv = features[i];
                 const featureId = featureDiv.getAttribute('data-feature-id');
-                const category = featureDiv.querySelector(`#featureCategory${featureId}`).value.trim();
-                const description = featureDiv.querySelector(`#featureDescription${featureId}`).value.trim();
-                const featureFile = featureDiv.querySelector(`#featureFile${featureId}`).files[0];
+                const category = featureDiv.querySelector(`#featureCategory${featureId}`)?.value.trim();
+                const description = featureDiv.querySelector(`#featureDescription${featureId}`)?.value.trim();
+                const featureFile = featureDiv.querySelector(`#featureFile${featureId}`)?.files[0];
 
                 let featureFileURL = '';
 
@@ -517,59 +972,53 @@ async function saveProduct() {
                     const snapshot = await storageRef.put(featureFile);
                     featureFileURL = await snapshot.ref.getDownloadURL();
 
-                    // Progress Bar'ı güncelle
                     uploadedFiles++;
-                    let progress = Math.round((uploadedFiles / totalFiles) * 100);
-                    progressBar.style.width = progress + '%';
-                    progressBar.textContent = progress + '%';
+                    if (progressBar) {
+                        let progress = Math.round((uploadedFiles / totalFiles) * 100);
+                        progressBar.style.width = `${progress}%`;
+                        progressBar.textContent = `${progress}%`;
+                    }
                 } else if (isEditing && existingProductData.features && existingProductData.features[i]) {
                     featureFileURL = existingProductData.features[i].fileURL || '';
                 }
 
                 productData.features.push({
-                    category: category,
-                    description: description,
+                    category: category || 'Kategori',
+                    description: description || 'Açıklama',
                     fileURL: featureFileURL
                 });
             }
 
-            // Veriyi Realtime Database'e ekle
             await database.ref('products/' + productKey).set(productData);
 
             alert(isEditing ? 'Ürün güncellendi!' : 'Kayıt başarılı! QR kodu aşağıda görüntüleyebilir ve indirebilirsiniz.');
 
-            // QR kodunu oluştur ve kullanıcıya göster
             const qrData = `https://erkayayazilim.github.io/qrcode/user.html?id=${productKey}`;
-
             const qrcodeElement = document.getElementById('qrcode');
-            qrcodeElement.innerHTML = ''; // Önceki QR kodunu temizle
+            if (qrcodeElement) {
+                qrcodeElement.innerHTML = '';
+                new QRCode(qrcodeElement, {
+                    text: qrData,
+                    width: 256,
+                    height: 256,
+                });
 
-            new QRCode(qrcodeElement, {
-                text: qrData,
-                width: 256,
-                height: 256,
-            });
+                setTimeout(() => {
+                    const canvas = qrcodeElement.querySelector('canvas');
+                    if (!canvas) return;
+                    const imgData = canvas.toDataURL('image/png');
+                    const sanitizedProductName = productName.replace(/[<>:"\/\\|?*]+/g, '_');
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = imgData;
+                    downloadLink.download = `${sanitizedProductName}.png`;
+                    downloadLink.textContent = 'QR Kodu İndir';
+                    downloadLink.classList.add('btn', 'btn-primary', 'mt-3');
+                    qrcodeElement.appendChild(downloadLink);
+                }, 500);
+            }
 
-            // QR kodunu indirilebilir yap
-            setTimeout(() => {
-                const canvas = qrcodeElement.querySelector('canvas');
-                const imgData = canvas.toDataURL('image/png');
-
-                // Ürün ismini dosya adına uygun hale getirin
-                const sanitizedProductName = productName.replace(/[<>:"\/\\|?*]+/g, '_');
-
-                const downloadLink = document.createElement('a');
-                downloadLink.href = imgData;
-                downloadLink.download = `${sanitizedProductName}.png`;
-                downloadLink.textContent = 'QR Kodu İndir';
-                downloadLink.classList.add('btn', 'btn-primary', 'mt-3');
-                qrcodeElement.appendChild(downloadLink);
-            }, 500);
-
-            // Etiket QR kodunu güncelle
             updateLabelQRCode(productKey);
 
-            // Formu sıfırla ve başka bir ürün ekleme butonunu göster
             const newProductBtn = document.createElement('button');
             newProductBtn.textContent = 'Yeni Ürün Ekle';
             newProductBtn.id = 'newProductBtn';
@@ -578,625 +1027,32 @@ async function saveProduct() {
                 clearProductForm();
                 showAddProductForm();
             };
-            document.getElementById('addProductForm').appendChild(newProductBtn);
+            const addProductForm = document.getElementById('addProductForm');
+            if (addProductForm) {
+                addProductForm.appendChild(newProductBtn);
+            }
 
-            uploadProgress.classList.add('d-none');
-            progressBar.style.width = '0%';
-            progressBar.textContent = '0%';
+            if (uploadProgress && progressBar) {
+                uploadProgress.classList.add('d-none');
+                uploadProgress.style.display = 'none';
+                progressBar.style.width = '0%';
+                progressBar.textContent = '0%';
+            }
 
-            
+            const labelContainer = document.getElementById('labelContainer');
+            if (labelContainer) {
+                labelContainer.scrollIntoView({ behavior: 'smooth' });
+            }
 
         } catch (error) {
             console.error('Hata:', error);
             alert('Ürün kaydedilirken bir hata oluştu.');
-            uploadProgress.classList.add('d-none');
-            progressBar.style.width = '0%';
-            progressBar.textContent = '0%';
-        }
-
-        // Etiketi göster
-        document.getElementById('labelContainer').scrollIntoView({ behavior: 'smooth' });
-
-    } else {
-        alert('Lütfen tüm alanları doldurun.');
-    }
-}
-
-// Ürünleri Yükleme ve Arama İşlevleri
-let allProducts = [];
-
-function loadAllProducts() {
-    database.ref('products').once('value')
-        .then(snapshot => {
-            allProducts = [];
-
-            snapshot.forEach(childSnapshot => {
-                const productKey = childSnapshot.key;
-                const productData = childSnapshot.val();
-                allProducts.push({ key: productKey, ...productData });
-            });
-        })
-        .catch(error => {
-            console.error('Hata:', error);
-        });
-}
-
-function updateTotalProductCount() {
-    database.ref('products').once('value')
-        .then(snapshot => {
-            const totalProducts = snapshot.numChildren();
-            document.getElementById('totalProducts').textContent = `Toplam Ürün: ${totalProducts}`;
-        })
-        .catch(error => {
-            console.error('Hata:', error);
-        });
-}
-
-
-function searchProducts() {
-    const searchValue = document.getElementById('searchInput').value.toLowerCase().trim();
-
-    if (searchValue === '') {
-        // Arama kutusu boşsa tabloyu temizle ve toplam ürün sayısını güncelle
-        const productsTableBody = document.querySelector('#productsTable tbody');
-        productsTableBody.innerHTML = '';
-        document.getElementById('totalProducts').textContent = `Toplam Ürün: ${allProducts.length}`;
-        return;
-    }
-
-    const filteredProducts = allProducts.filter(product =>
-        product.productName.toLowerCase().includes(searchValue) ||
-        (product.productCode && product.productCode.toLowerCase().includes(searchValue))
-    );
-
-    const productsTableBody = document.querySelector('#productsTable tbody');
-    productsTableBody.innerHTML = '';
-
-    filteredProducts.forEach(product => {
-        const imageSrc = (product.images && product.images.length > 0) ? product.images[0] : '';
-
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td><img src="${imageSrc}" alt="Ürün Resmi" style="width: 50px; height: 50px; object-fit: cover;"></td>
-            <td>${product.productName}</td>
-            <td>${product.productCode || ''}</td>
-            <td>${product.listPrice || ''} TL</td>
-            <td>${product.discountedPrice || ''} TL</td>
-            <td>${product.stock || 0}</td>
-            <td>${product.saleable ? 'Evet' : 'Hayır'}</td>
-            <td><img src="" alt="QR Kod" id="qrImg${product.key}" style="width: 50px; height: 50px;"></td>
-            <td class="action-buttons text-end">
-                <button class="btn btn-primary btn-sm" onclick="downloadQRCode('${product.key}')">
-                    <i class="bi bi-download"></i>
-                </button>
-                <button class="btn btn-warning btn-sm" onclick="editProduct('${product.key}')">
-                    <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-danger btn-sm" onclick="deleteProduct('${product.key}')">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </td>
-        `;
-        productsTableBody.appendChild(tr);
-
-        // QR kodu oluştur ve img etiketi içine yerleştir
-        const qrData = `https://erkayayazilim.github.io/qrcode/user.html?id=${product.Key}`;
-        const tempDiv = document.createElement('div');
-        new QRCode(tempDiv, {
-            text: qrData,
-            width: 50,
-            height: 50,
-        });
-        setTimeout(() => {
-            const canvas = tempDiv.querySelector('canvas');
-            const imgData = canvas.toDataURL('image/png');
-            document.getElementById(`qrImg${product.key}`).src = imgData;
-        }, 500);
-    });
-
-    // Bulunan ürün sayısını güncelle
-    document.getElementById('totalProducts').textContent = `Bulunan Ürün: ${filteredProducts.length}`;
-}
-
-function readExcelFile(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, { type: 'array' });
-            const sheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[sheetName];
-            excelData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-            alert('Excel dosyası başarıyla yüklendi. Güncelleme işlemini başlatmak için "Yükle ve Güncelle" butonuna basın.');
-        };
-        reader.readAsArrayBuffer(file);
-    }
-}
-
-function addMappingField() {
-    const mappingContainer = document.getElementById('columnMapping');
-    const mappingRow = document.createElement('div');
-    mappingRow.classList.add('row', 'mb-2');
-    mappingRow.innerHTML = `
-        <div class="col-md-6">
-            <select class="form-select update-field">
-                <option value="listPrice">Liste Fiyatı</option>
-                <option value="discountedPrice">İndirimli Fiyat</option>
-                <option value="stock">Mevcut Stok</option>
-                <option value="saleable">Satılabilir</option>
-            </select>
-        </div>
-        <div class="col-md-6">
-            <input type="text" class="form-control excel-column-name" placeholder="Excel Sütun İsmi">
-        </div>
-    `;
-    mappingContainer.appendChild(mappingRow);
-}
-
-async function handleExcelUpload() {
-    if (!excelData) {
-        alert('Lütfen önce bir Excel dosyası yükleyin.');
-        return;
-    }
-
-    try {
-        // Kullanıcıdan ürün kodu sütun adını al
-        const productCodeColumnName = document.getElementById('productCodeColumnName').value.trim().toUpperCase();
-        if (!productCodeColumnName) {
-            alert('Lütfen ürün kodu sütun adını giriniz.');
-            return;
-        }
-
-        // Kullanıcıdan eşleştirmeleri al
-        const mappings = [];
-        const mappingRows = document.querySelectorAll('#columnMapping .row');
-        mappingRows.forEach(row => {
-            const field = row.querySelector('.update-field').value;
-            const columnName = row.querySelector('.excel-column-name').value.trim().toUpperCase();
-            if (field && columnName) {
-                mappings.push({ field, columnName });
+            if (uploadProgress && progressBar) {
+                uploadProgress.classList.add('d-none');
+                uploadProgress.style.display = 'none';
+                progressBar.style.width = '0%';
+                progressBar.textContent = '0%';
             }
-        });
-
-        if (mappings.length === 0) {
-            alert('Lütfen en az bir alan eşleştirmesi yapın.');
-            return;
         }
-
-        // Başlık satırını al
-        const headers = excelData[0].map(header => header.toString().toUpperCase());
-        const productCodeIndex = headers.indexOf(productCodeColumnName);
-
-        if (productCodeIndex === -1) {
-            alert(`Excel dosyasında "${productCodeColumnName}" sütunu bulunamadı.`);
-            return;
-        }
-
-        // Alanların indekslerini belirle
-        mappings.forEach(mapping => {
-            mapping.index = headers.indexOf(mapping.columnName);
-            if (mapping.index === -1) {
-                alert(`Excel dosyasında "${mapping.columnName}" sütunu bulunamadı.`);
-            }
-        });
-
-        // İşlem göstergesi
-        const totalRows = excelData.length - 1;
-        let processedRows = 0;
-
-        // Yükleme Progress Bar'ını göster
-        const uploadProgress = document.getElementById('excelUploadProgress');
-        const progressBar = document.getElementById('excelProgressBar');
-        uploadProgress.classList.remove('d-none');
-
-        // Her satırı işle
-        for (let i = 1; i < excelData.length; i++) {
-            const row = excelData[i];
-            const productCode = row[productCodeIndex];
-
-            if (productCode) {
-                // Veritabanında ürün kodu eşleşen ürünleri bul
-                const snapshot = await database.ref('products').orderByChild('productCode').equalTo(productCode.toString()).once('value');
-                if (snapshot.exists()) {
-                    snapshot.forEach(childSnapshot => {
-                        const updates = {};
-                        mappings.forEach(mapping => {
-                            const value = row[mapping.index];
-                            if (value !== undefined && value !== null) {
-                                if (mapping.field === 'saleable') {
-                                    updates[mapping.field] = value.toString().toLowerCase() === 'evet' ? true : false;
-                                } else {
-                                    updates[mapping.field] = value.toString();
-                                }
-                            }
-                        });
-                        childSnapshot.ref.update(updates);
-                    });
-                } else {
-                    console.log(`Ürün kodu "${productCode}" veritabanında bulunamadı.`);
-                    // Yeni ürün ekleme işlemi yapılmayacak
-                }
-            }
-
-            processedRows++;
-            // İlerleme yüzdesini göster
-            let progress = Math.round((processedRows / totalRows) * 100);
-            progressBar.style.width = progress + '%';
-            progressBar.textContent = progress + '%';
-        }
-
-        alert('Güncelleme işlemi başarıyla tamamlandı.');
-        
-
-        // Yükleme Progress Bar'ını gizle
-        uploadProgress.classList.add('d-none');
-        progressBar.style.width = '0%';
-        progressBar.textContent = '0%';
-
-        // Excel verilerini sıfırla
-        excelData = null;
-        document.getElementById('excelFileInput').value = '';
-
-    } catch (error) {
-        console.error('Excel dosyası işlenirken hata oluştu:', error);
-        alert('Excel dosyası işlenirken hata oluştu.');
-        // Yükleme Progress Bar'ını gizle
-        uploadProgress.classList.add('d-none');
-        progressBar.style.width = '0%';
-        progressBar.textContent = '0%';
     }
-}
-
-
-// QR Kodunu İndirme
-function downloadQRCode(productKey) {
-    const qrData = `https://erkayayazilim.github.io/qrcode/user.html?id=${productKey}`;
-    const tempDiv = document.createElement('div');
-    new QRCode(tempDiv, {
-        text: qrData,
-        width: 256,
-        height: 256,
-    });
-    setTimeout(() => {
-        const canvas = tempDiv.querySelector('canvas');
-        const imgData = canvas.toDataURL('image/png');
-        const downloadLink = document.createElement('a');
-        downloadLink.href = imgData;
-        downloadLink.download = 'qrcode.png';
-        downloadLink.click();
-    }, 500);
-}
-
-// Ürünü Silme
-function deleteProduct(productKey) {
-    if (confirm('Ürünü silmek istediğinize emin misiniz?')) {
-        database.ref('products/' + productKey).remove()
-        .then(() => {
-            alert('Ürün silindi.');
-           
-        })
-        .catch(error => {
-            console.error('Hata:', error);
-            alert('Ürün silinirken bir hata oluştu.');
-        });
-    }
-}
-
-// Ürünü Düzenleme
-function editProduct(productKey) {
-    // Formu göster
-    showAddProductForm();
-    // Formu temizle
-    clearProductForm();
-    // Durumları ayarla
-    isEditing = true;
-    editingProductKey = productKey;
-    document.getElementById('formTitle').textContent = 'Ürünü Düzenle';
-    document.getElementById('saveBtn').innerHTML = '<i class="bi bi-save me-1"></i> Güncelle';
-
-    database.ref('products/' + productKey).once('value')
-    .then(snapshot => {
-        const data = snapshot.val();
-        if (data) {
-            existingProductData = data;
-
-            // Formu doldur
-            document.getElementById('productName').value = data.productName;
-            document.getElementById('productCode').value = data.productCode || '';
-            document.getElementById('productLink').value = data.productLink || '';
-            document.getElementById('listPrice').value = data.listPrice || '';
-            document.getElementById('discountedPrice').value = data.discountedPrice || '';
-            document.getElementById('productDescription').value = data.productDescription;
-
-            // Resimleri önizlemeye ekle
-            if (data.images && data.images.length > 0) {
-                const previewCarouselInner = document.getElementById('previewCarouselInner');
-                previewCarouselInner.innerHTML = '';
-                data.images.forEach((imageUrl, index) => {
-                    const carouselItem = document.createElement('div');
-                    carouselItem.className = 'carousel-item';
-                    if (index === 0) {
-                        carouselItem.classList.add('active');
-                    }
-                    const img = document.createElement('img');
-                    img.src = imageUrl;
-                    img.className = 'd-block w-100';
-                    carouselItem.appendChild(img);
-                    previewCarouselInner.appendChild(carouselItem);
-                });
-            }
-
-            // Özellikleri forma ekle
-            if (data.features && data.features.length > 0) {
-                data.features.forEach((feature, index) => {
-                    addFeature();
-                    const featureId = featureCount;
-                    document.getElementById(`featureCategory${featureId}`).value = feature.category;
-                    document.getElementById(`featureDescription${featureId}`).value = feature.description;
-                    // Özellik dosyalarını ekleyebilirsiniz
-                });
-                // Özellik önizlemesini güncelle
-                updateFeaturePreview();
-            }
-
-            // Canlı önizlemeyi güncelle
-            updatePreview();
-            // Resim önizlemesini güncelle
-            updateImagePreview();
-        }
-    })
-    .catch(error => {
-        console.error('Hata:', error);
-        alert('Ürün yüklenirken bir hata oluştu.');
-    });
-}
-
-// Ayarları Kaydetme ve Yükleme
-function saveSettings() {
-    const email = document.getElementById('settingsEmail').value.trim();
-    const phone = document.getElementById('settingsPhone').value.trim();
-    const address = document.getElementById('settingsAddress').value.trim();
-
-    const settingsData = {
-        email: email,
-        phone: phone,
-        address: address
-    };
-
-    database.ref('settings').set(settingsData)
-    .then(() => {
-        alert('Ayarlar kaydedildi.');
-        loadSettingsForPreview();
-    })
-    .catch(error => {
-        console.error('Hata:', error);
-        alert('Ayarlar kaydedilirken bir hata oluştu.');
-    });
-}
-
-function loadSettings() {
-    database.ref('settings').once('value')
-    .then(snapshot => {
-        const data = snapshot.val();
-        if (data) {
-            document.getElementById('settingsEmail').value = data.email || '';
-            document.getElementById('settingsPhone').value = data.phone || '';
-            document.getElementById('settingsAddress').value = data.address || '';
-        }
-    })
-    .catch(error => {
-        console.error('Hata:', error);
-    });
-}
-
-function loadSettingsForPreview() {
-    database.ref('settings').once('value')
-    .then(snapshot => {
-        const data = snapshot.val();
-        if (data) {
-            document.getElementById('previewPhone').textContent = data.phone || 'Telefon';
-            document.getElementById('previewEmail').textContent = data.email || 'E-posta';
-        }
-    })
-    .catch(error => {
-        console.error('Hata:', error);
-    });
-}
-
-function showAllProductsPage() {
-    hideAllSections();
-    document.getElementById('allProductsPage').classList.remove('d-none');
-    setActiveNav('navViewAllProducts');
-
-    // Tüm ürünleri yükle ve progress bar ile göster
-    loadAllProductsWithProgress();
-}
-
-// Tüm Ürünleri Yükleme ve Progress Bar Gösterme Fonksiyonu
-function loadAllProductsWithProgress() {
-    const allProductsTableBody = document.querySelector('#allProductsTable tbody');
-    allProductsTableBody.innerHTML = ''; // Önceki verileri temizle
-
-    const allProductsProgress = document.getElementById('allProductsProgress');
-    const allProductsProgressBar = document.getElementById('allProductsProgressBar');
-    allProductsProgress.style.display = 'block'; // Progress bar'ı göster
-    allProductsProgressBar.style.width = '0%'; // Progress bar'ı sıfırla
-
-    database.ref('products').once('value')
-        .then(snapshot => {
-            const totalProducts = snapshot.numChildren();
-            let loadedProducts = 0;
-
-            snapshot.forEach(childSnapshot => {
-                const productKey = childSnapshot.key;
-                const productData = childSnapshot.val();
-
-                // Ürünü tabloya ekle
-                const imageSrc = (productData.images && productData.images.length > 0) ? productData.images[0] : '';
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><img src="${imageSrc}" alt="Ürün Resmi" style="width: 50px; height: 50px; object-fit: cover;"></td>
-                    <td>${productData.productName}</td>
-                    <td>${productData.productCode || ''}</td>
-                    <td>${productData.listPrice || ''} TL</td>
-                    <td>${productData.discountedPrice || ''} TL</td>
-                    <td>${productData.stock || 0}</td>
-                    <td>${productData.saleable ? 'Evet' : 'Hayır'}</td>
-                    <td><img src="" alt="QR Kod" id="qrImgAll${productKey}" style="width: 50px; height: 50px;"></td>
-                `;
-                allProductsTableBody.appendChild(tr);
-
-                // QR kodu oluştur ve tabloya ekle
-                const qrData = `https://erkayayazilim.github.io/qrcode/user.html?id=${productKey}`;
-                const tempDiv = document.createElement('div');
-                new QRCode(tempDiv, {
-                    text: qrData,
-                    width: 50,
-                    height: 50,
-                });
-                setTimeout(() => {
-                    const canvas = tempDiv.querySelector('canvas');
-                    const imgData = canvas.toDataURL('image/png');
-                    document.getElementById(`qrImgAll${productKey}`).src = imgData;
-                }, 500);
-
-                // Progress bar'ı güncelle
-                loadedProducts++;
-                const progress = Math.round((loadedProducts / totalProducts) * 100);
-                allProductsProgressBar.style.width = progress + '%';
-                allProductsProgressBar.textContent = progress + '%';
-
-                // Yükleme tamamlandığında progress bar'ı gizle
-                if (loadedProducts === totalProducts) {
-                    allProductsProgress.style.display = 'none';
-                }
-            });
-        })
-        .catch(error => {
-            console.error('Hata:', error);
-            allProductsProgress.style.display = 'none';
-            alert('Ürünler yüklenirken bir hata oluştu.');
-        });
-}
-function showPrintLabelsPage() {
-    hideAllSections();
-    document.getElementById('printLabelsPage').classList.remove('d-none');
-    setActiveNav('navPrintLabels');
-    loadProductsForLabelPrinting();
-}
-function hideAllSections() {
-    document.getElementById('dashboard').classList.add('d-none');
-    document.getElementById('addProductForm').classList.add('d-none');
-    document.getElementById('settingsPage').classList.add('d-none');
-    document.getElementById('excelUploadPage').classList.add('d-none');
-    document.getElementById('allProductsPage').classList.add('d-none');
-    document.getElementById('printLabelsPage').classList.add('d-none'); // Yeni eklenen sayfa
-}function loadProductsForLabelPrinting() {
-    const labelProductsTableBody = document.querySelector('#labelProductsTable tbody');
-    labelProductsTableBody.innerHTML = '';
-
-    // Tüm ürünleri yükleyin
-    database.ref('products').once('value')
-        .then(snapshot => {
-            const products = [];
-            snapshot.forEach(childSnapshot => {
-                const productKey = childSnapshot.key;
-                const productData = childSnapshot.val();
-                products.push({ key: productKey, ...productData });
-            });
-
-            // Tabloya ürünleri ekleyin
-            products.forEach(product => {
-                const imageSrc = (product.images && product.images.length > 0) ? product.images[0] : '';
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><input type="checkbox" class="product-checkbox" data-product-key="${product.key}"></td>
-                    <td><img src="${imageSrc}" alt="Ürün Resmi" style="width: 50px; height: 50px; object-fit: cover;"></td>
-                    <td>${product.productName}</td>
-                    <td>${product.productCode || ''}</td>
-                    <td>${product.discountedPrice || ''} TL</td>
-                    <td>${product.listPrice || ''} TL</td>
-                `;
-                labelProductsTableBody.appendChild(tr);
-            });
-
-            // Arama işlevi
-            document.getElementById('labelSearchInput').addEventListener('input', function () {
-                const searchValue = this.value.toLowerCase().trim();
-                const rows = labelProductsTableBody.querySelectorAll('tr');
-                rows.forEach(row => {
-                    const productName = row.children[2].textContent.toLowerCase();
-                    if (productName.includes(searchValue)) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
-            });
-        })
-        .catch(error => {
-            console.error('Hata:', error);
-        });
-}
-
-// Excel indirme butonu için event listener
-document.getElementById('downloadExcelBtn').addEventListener('click', downloadSelectedProductsAsExcel);
-
-function downloadSelectedProductsAsExcel() {
-    const selectedProductKeys = [];
-    const checkboxes = document.querySelectorAll('.product-checkbox');
-    checkboxes.forEach(checkbox => {
-        if (checkbox.checked) {
-            selectedProductKeys.push(checkbox.getAttribute('data-product-key'));
-        }
-    });
-
-    if (selectedProductKeys.length === 0) {
-        alert('Lütfen en az bir ürün seçin.');
-        return;
-    }
-
-    // Seçilen ürünlerin verilerini al
-    const promises = selectedProductKeys.map(key => {
-        return database.ref('products/' + key).once('value')
-            .then(snapshot => {
-                const data = snapshot.val();
-                // QR kod linkini oluştur
-                const qrLink = `https://erkayayazilim.github.io/qrcode/user.html?id=${key}`;
-                return {
-                    'Ürün Kodu': data.productCode || '',
-                    'Ürün İsmi': data.productName || '',
-                    'Satış Fiyatı': data.discountedPrice ? `${data.discountedPrice} TL` : '',
-                    'Liste Fiyatı': data.listPrice ? `${data.listPrice} TL` : '',
-                    'Ürün Linki': qrLink
-                };
-            });
-    });
-
-    Promise.all(promises)
-        .then(productsData => {
-            // XLSX.js kullanarak Excel dosyası oluştur
-            const worksheet = XLSX.utils.json_to_sheet(productsData);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, 'Ürünler');
-
-            // Excel dosyasını indirin
-            const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-            const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-            const url = URL.createObjectURL(blob);
-
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'urunler.xlsx';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-        })
-        .catch(error => {
-            console.error('Hata:', error);
-            alert('Excel dosyası oluşturulurken bir hata oluştu.');
-        });
 }

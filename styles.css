@@ -1,482 +1,614 @@
 /* Genel Stil Ayarları */
 body {
+    /* Yazı tipi ailesi olarak Roboto sans-serif seçiliyor */
     font-family: 'Roboto', sans-serif;
+    /* Sayfanın arka plan rengi */
     background-color: #f0f2f5;
+    /* Sayfa dış boşlukları kaldırılıyor */
     margin: 0;
-    padding: 0;
+    /* Sayfa iç boşluğu 20px olarak ayarlanıyor */
+    padding: 20px;
+    /* Yazı rengini koyu gri olarak belirliyoruz */
     color: #333;
 }
 
 /* Navbar Stil Ayarları */
 .navbar {
+    /* Navbar arka plan rengini koyu gri olarak belirliyoruz */
     background-color: #343a40;
+    /* Navbar'a hafif bir gölge ekliyoruz */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .navbar-brand {
+    /* Navbar markasının kalınlığını artırıyoruz */
     font-weight: 700;
+    /* Navbar markasının yazı boyutunu 1.5em yapıyoruz */
     font-size: 1.5em;
+    /* Harf aralığını artırıyoruz */
     letter-spacing: 1px;
 }
 
 .navbar .nav-link {
+    /* Navbar'daki linklerin rengini beyaz yapıyoruz */
     color: #ffffff;
+    /* Linkler arasına sağdan 20px boşluk bırakıyoruz */
     margin-right: 20px;
+    /* Renk değişimini yumuşak bir geçişle yapıyoruz */
     transition: color 0.3s;
 }
 
 .navbar .nav-link:hover {
+    /* Hover (üzerine gelindiğinde) renk değişimini açık gri yapıyoruz */
     color: #adb5bd;
 }
 
 /* Başlıklar */
-h1, h3 {
+h1, h3, h4 {
+    /* Başlıkları ortalıyoruz */
     text-align: center;
+    /* Başlık altındaki boşluğu 25px olarak ayarlıyoruz */
     margin-bottom: 25px;
+    /* Başlık metin rengini koyu gri yapıyoruz */
     color: #212529;
+    /* Başlık yazısını kalın yapıyoruz */
     font-weight: 700;
 }
 
 h2, h4 {
+    /* h2 ve h4 başlıklarının rengi ve ağırlığını belirliyoruz */
     color: #212529;
     font-weight: 600;
 }
 
 /* Butonlar */
 .btn {
+    /* Buton yazı boyutunu 1em yapıyoruz */
     font-size: 1em;
+    /* Buton içindeki boşlukları belirliyoruz */
     padding: 10px 25px;
+    /* Buton kenarlarını yuvarlıyoruz */
     border-radius: 5px;
+    /* Buton arka plan renginin değişimi ve dönüşüme geçiş ekliyoruz */
     transition: background-color 0.3s, transform 0.3s;
 }
 
 .btn-primary {
+    /* Primary butonun arka plan ve border rengini belirliyoruz */
     background-color: #007bff;
     border-color: #007bff;
 }
 
 .btn-primary:hover {
+    /* Primary buton hover durumunda arka plan ve border rengini değiştiriyoruz */
     background-color: #0056b3;
     border-color: #004085;
+    /* Butonun yukarı doğru hafifçe hareket etmesini sağlıyoruz */
     transform: translateY(-2px);
 }
 
 .btn-secondary {
+    /* Secondary butonun arka plan ve border rengini belirliyoruz */
     background-color: #6c757d;
     border-color: #6c757d;
 }
 
 .btn-secondary:hover {
+    /* Secondary buton hover durumunda arka plan ve border rengini değiştiriyoruz */
     background-color: #5a6268;
     border-color: #545b62;
+    /* Butonun yukarı doğru hafifçe hareket etmesini sağlıyoruz */
     transform: translateY(-2px);
 }
 
 .btn-success {
+    /* Success butonun arka plan ve border rengini belirliyoruz */
     background-color: #28a745;
     border-color: #28a745;
 }
 
 .btn-success:hover {
+    /* Success buton hover durumunda arka plan ve border rengini değiştiriyoruz */
     background-color: #218838;
     border-color: #1e7e34;
+    /* Butonun yukarı doğru hafifçe hareket etmesini sağlıyoruz */
     transform: translateY(-2px);
 }
 
 .btn-danger {
+    /* Danger butonun arka plan ve border rengini belirliyoruz */
     background-color: #dc3545;
     border-color: #dc3545;
 }
 
 .btn-danger:hover {
+    /* Danger buton hover durumunda arka plan ve border rengini değiştiriyoruz */
     background-color: #c82333;
     border-color: #bd2130;
+    /* Butonun yukarı doğru hafifçe hareket etmesini sağlıyoruz */
     transform: translateY(-2px);
 }
 
 .btn-outline-secondary {
+    /* Outline secondary butonun arka planını transparan yapıyoruz ve border rengini belirliyoruz */
     background-color: transparent;
     border-color: #6c757d;
     color: #6c757d;
 }
 
 .btn-outline-secondary:hover {
+    /* Outline secondary buton hover durumunda arka planı dolduruyoruz ve yazı rengini beyaz yapıyoruz */
     background-color: #6c757d;
     color: #fff;
+    /* Butonun yukarı doğru hafifçe hareket etmesini sağlıyoruz */
     transform: translateY(-2px);
 }
 
 /* Form Etiketleri */
 .form-label {
+    /* Form etiketlerinin yazı kalınlığını artırıyoruz */
     font-weight: 600;
+    /* Form etiketlerinin yazı rengini koyu gri yapıyoruz */
     color: #212529;
 }
 
 /* Progress Bar */
 .progress {
+    /* Progress bar yüksekliğini 1.5rem olarak ayarlıyoruz */
     height: 1.5rem;
+    /* Progress bar köşe yuvarlamalarını belirliyoruz */
     border-radius: 0.25rem;
 }
 
 .progress-bar {
+    /* Progress bar yazı boyutunu ayarlıyoruz */
     font-size: 1rem;
+    /* Progress bar satır yüksekliğini ayarlıyoruz */
     line-height: 1.5rem;
+    /* Progress bar yazı rengini beyaz yapıyoruz */
     color: #fff;
+    /* Yazıyı ortalıyoruz */
     text-align: center;
+    /* Progress bar'ın arka plan rengini primary buton rengine eşitliyoruz */
     background-color: #007bff;
 }
 
 /* Feature Bölümü */
 .feature {
+    /* Feature bölümlerinin kenarlığını ve arka plan rengini belirliyoruz */
     border: 1px solid #dee2e6;
+    background-color: #fff;
+    /* İç boşlukları ve dış boşlukları ayarlıyoruz */
     padding: 20px;
     margin-bottom: 20px;
-    background-color: #fff;
+    /* Kenarları yuvarlatıyoruz */
     border-radius: 10px;
+    /* Position relative yaparak içindeki elementlerin pozisyonunu kontrol ediyoruz */
     position: relative;
+    /* Hafif bir gölge ekliyoruz */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .feature h5 {
+    /* Başlıkların üst boşluğunu kaldırıyoruz */
     margin-top: 0;
+    /* Yazıyı kalın yapıyoruz */
     font-weight: 600;
+    /* Yazı rengini koyu gri yapıyoruz */
     color: #212529;
 }
 
 .remove-feature-btn {
+    /* Özellik kaldırma butonunu pozisyonluyoruz */
     position: absolute;
     top: 15px;
     right: 15px;
+    /* Butonun arka planını transparan yapıyoruz */
     background-color: transparent;
+    /* Butonun kenarlığını kaldırıyoruz */
     border: none;
+    /* Yazı rengini danger buton rengine eşitliyoruz */
     color: #dc3545;
+    /* Buton font boyutunu belirliyoruz */
     font-size: 1.2rem;
+    /* Butonun tıklanabilir olmasını sağlıyoruz */
     cursor: pointer;
+    /* Renk değişimini yumuşak bir geçişle yapıyoruz */
     transition: color 0.3s;
 }
 
 .remove-feature-btn:hover {
+    /* Hover durumunda buton rengini daha koyu yapıyoruz */
     color: #a71d2a;
 }
 
 /* Tablo Stil Ayarları */
 .table td, .table th {
+    /* Tablo hücrelerinin dikey hizalamasını ortala yapıyoruz */
     vertical-align: middle;
 }
 
 .table th {
+    /* Tablo başlıklarının arka plan rengini açık gri yapıyoruz */
     background-color: #f8f9fa;
+    /* Tablo başlıklarının yazı rengini koyu gri yapıyoruz */
     color: #495057;
+    /* Yazı kalınlığını artırıyoruz */
     font-weight: 600;
 }
 
 .action-buttons button {
+    /* Action butonları arasına sağdan 5px boşluk bırakıyoruz */
     margin-right: 5px;
 }
 
 /* Telefon Önizleme */
 .phone-preview {
+    /* Telefon önizleme kutusunun genişliğini ve yüksekliğini belirliyoruz */
     width: 320px;
     height: 640px;
+    /* Telefon çerçevesi için kenar kalınlığını ve rengini belirliyoruz */
     border: 16px #333 solid;
     border-top: 60px #333 solid;
     border-bottom: 60px #333 solid;
+    /* Köşeleri yuvarlatıyoruz */
     border-radius: 36px;
+    /* Ortalamak için otomatik kenar boşluğu */
     margin: 0 auto;
+    /* Taşmayı gizliyoruz */
     overflow: hidden;
+    /* Telefon arka plan rengini beyaz yapıyoruz */
     background-color: #fff;
+    /* Position relative yapıyoruz */
     position: relative;
+    /* Hafif bir gölge ekliyoruz */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .phone-screen {
+    /* Telefon ekranının genişliğini ve yüksekliğini belirliyoruz */
     width: 100%;
     height: 100%;
+    /* Dikey taşmayı kontrol ediyoruz */
     overflow-y: auto;
+    /* Ekran arka plan rengini belirliyoruz */
     background-color: #f0f2f5;
 }
 
 /* Header ve Footer */
 .header {
+    /* Header arka plan rengini koyu gri yapıyoruz */
     background-color: #343a40;
+    /* Header içindeki padding ayarı */
     padding: 20px 30px;
+    /* Yazı rengini beyaz yapıyoruz */
     color: #fff;
+    /* Header içindeki öğeleri yan yana ve aralarındaki boşluğu belirliyoruz */
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .header .logo {
+    /* Logo yüksekliğini sınırlıyoruz */
     max-height: 50px;
+    /* Hover etkisi için geçiş ekliyoruz */
     transition: transform 0.3s;
 }
 
 .header .logo:hover {
+    /* Logo üzerine gelindiğinde büyütüyoruz */
     transform: scale(1.1);
 }
 
 .header .contact-info p {
+    /* Contact info paragraflarının boşluğunu sıfırlıyoruz */
     margin: 0;
+    /* Yazı boyutunu ayarlıyoruz */
     font-size: 0.9rem;
 }
 
 .footer {
+    /* Footer arka plan rengini açık gri yapıyoruz */
     background-color: #f8f9fa;
+    /* Footer içindeki padding ayarı */
     padding: 15px 20px;
+    /* Yazıyı ortalıyoruz */
     text-align: center;
+    /* Yazı boyutunu ayarlıyoruz */
     font-size: 0.85rem;
+    /* Yazı rengini koyu gri yapıyoruz */
     color: #6c757d;
+    /* Üst boşluk ekliyoruz */
     margin-top: 30px;
+    /* Üst kenara çizgi ekliyoruz */
     border-top: 1px solid #dee2e6;
 }
 
 .footer .contact-info p {
+    /* Footer contact info paragraflarının boşluğunu ayarlıyoruz */
     margin: 5px 0;
 }
 
 /* Carousel */
 .carousel-item img {
+    /* Carousel içindeki resimlerin maksimum yüksekliğini belirliyoruz */
     max-height: 220px;
+    /* Resimlerin taşmasını engelliyoruz */
     object-fit: cover;
+    /* Resim genişliğini yüzde 100 yapıyoruz */
     width: 100%;
+    /* Resim köşelerini yuvarlatıyoruz */
     border-radius: 10px;
+    /* Hover etkisi için geçiş ekliyoruz */
     transition: transform 0.3s;
 }
 
 .carousel-item img:hover {
+    /* Resim üzerine gelindiğinde büyütüyoruz */
     transform: scale(1.05);
 }
 
 /* Ürün Detayları */
 .product-details h2 {
+    /* Ürün detay başlığının font boyutunu ayarlıyoruz */
     font-size: 1.8rem;
+    /* Başlık alt boşluğu ayarlıyoruz */
     margin-bottom: 15px;
+    /* Yazıyı kalın yapıyoruz */
     font-weight: 700;
+    /* Yazıyı ortalıyoruz */
     text-align: center;
+    /* Yazı rengini koyu gri yapıyoruz */
     color: #212529;
 }
 
 .price {
+    /* Fiyatın font boyutunu ve rengini belirliyoruz */
     font-size: 1.4rem;
     color: #28a745;
+    /* Alt boşluk ekliyoruz */
     margin-bottom: 25px;
+    /* Yazıyı kalın yapıyoruz */
     font-weight: 700;
+    /* Yazıyı ortalıyoruz */
     text-align: center;
 }
 
 .price del {
+    /* Eski fiyatın rengini açık gri yapıyoruz */
     color: #6c757d;
+    /* Eski fiyatın font boyutunu ayarlıyoruz */
     font-size: 1rem;
 }
 
 .features th {
+    /* Özellik tablosundaki başlık hücrelerinin genişliğini ayarlıyoruz */
     width: 40%;
 }
 
 .features th, .features td {
+    /* Özellik tablosundaki başlık ve veri hücrelerinin yazı boyutunu ayarlıyoruz */
     font-size: 0.9rem;
 }
 
 .description {
+    /* Ürün açıklamasının yazı boyutunu ve satır yüksekliğini belirliyoruz */
     font-size: 1rem;
     line-height: 1.6;
+    /* Yazı rengini koyu gri yapıyoruz */
     color: #495057;
+    /* Arka plan rengini açık gri yapıyoruz */
     background-color: #e9ecef;
+    /* İç boşluk ekliyoruz */
     padding: 15px;
+    /* Köşeleri yuvarlatıyoruz */
     border-radius: 10px;
+    /* Alt boşluk ekliyoruz */
     margin-bottom: 25px;
 }
 
 .product-link a {
+    /* Ürün linklerinin yazı rengini mavi yapıyoruz */
     color: #007bff;
+    /* Yazı alt çizgisi kaldırıyoruz */
     text-decoration: none;
+    /* Yazıyı biraz kalın yapıyoruz */
     font-weight: 500;
 }
 
 .product-link a:hover {
+    /* Link üzerine gelindiğinde alt çizgi ekliyoruz */
     text-decoration: underline;
 }
 
 /* Sosyal Medya Paylaşım Butonları */
 .social-share a {
+    /* Sosyal medya ikonlarının arasına sağdan ve soldan 10px boşluk bırakıyoruz */
     margin: 0 10px;
+    /* İkon boyutunu ayarlıyoruz */
     font-size: 1.8rem;
+    /* İkon rengini koyu gri yapıyoruz */
     color: #495057;
+    /* Renk değişimini yumuşak bir geçişle yapıyoruz */
     transition: color 0.3s;
 }
 
 .social-share a:hover {
+    /* İkon üzerine gelindiğinde mavi yapıyoruz */
     color: #007bff;
 }
+/* Genel Stil Ayarları */
 
-/* Etiket Önizleme */
+/* Etiket Önizleme Başlığı */
 .label-preview h4 {
-    text-align: center;
-    margin-top: 40px;
-    margin-bottom: 20px;
-    color: #212529;
+    text-align: center; /* Etiket başlığını ortalıyoruz */
+    margin-top: 0px;
+    margin-bottom: 0px;
+    color: #000000; /* Başlık rengini siyah yapıyoruz */
+    font-size: 50px; /* Başlık yazı boyutunu ayarlıyoruz */
 }
 
-.label {
-    position: relative;
-    font-family: 'Roboto', sans-serif;
-    width: 6cm;
-    height: 4.5cm;
-    border: 2px solid #dee2e6;
-    background-color: #fff;
-    margin: 0 auto;
-    overflow: hidden;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+/* Etiket Stilleri */
+.custom-label {
+    position: relative; /* İçeriklerin konumlandırılması için relative yapıyoruz */
+    font-family: 'Roboto', sans-serif; /* Etiket içeriği için Roboto fontunu kullanıyoruz */
+    width: 1100px;   /* Etiket genişliğini 1400px yapıyoruz */
+    height: 750px;   /* Etiket yüksekliğini 900px yapıyoruz */
+    border: 2px solid #dee2e6; /* Etiketin kenarlığını gri yapıyoruz */
+    background-color: transparent;  /* Etiket arka planını beyaz yapıyoruz */
+    margin: 0 auto; /* Etiketi ortalıyoruz */
+    text-align: left; /* Metni sola hizalıyoruz */
+    overflow: hidden; /* Taşan içeriği gizliyoruz */
+    border-radius: 10px; /* Etiket köşelerini 10px yuvarlatıyoruz */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Etikete hafif gölge efekti ekliyoruz */
+    padding: 0px; /* Etiket içindeki boşlukları ayarlıyoruz */
+    box-sizing: border-box; /* Box modelini border-box olarak ayarlıyoruz */
+    display: flex; /* İçeriği esnek kutu modeliyle düzenliyoruz */
+    flex-direction: column; /* İçeriği dikeyde hizalıyoruz */
+    justify-content: space-between; /* İçeriği dikeyde aralıklı yapıyoruz */
+    font-size: 70px; /* Metin font boyutunu ayarlıyoruz */
+    margin-left: 30px; /* Sol marjı 30px yapıyoruz */
+    
 }
 
+/* Etiket Üst Başlığı */
 .label-header {
-    background-color: #343a40;
-    color: #fff;
-    text-align: center;
-    padding: 0.3cm;
+    background-color: #000000; /* Etiketin üst kısmının arka planını siyah yapıyoruz */
+    color: #fff; /* Üst kısımdaki metin rengini beyaz yapıyoruz */
+    text-align: center; /* Metni ortalıyoruz */
+    font-size: 80px; /* Metin font boyutunu ayarlıyoruz */
+    font-weight: bold; /* Metni kalın yapıyoruz */
+    padding: 0px 0; /* Üst kısım iç dolgusunu kaldırıyoruz */
 }
 
-.company-name {
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: 1px;
-}
 
-.section-divider {
-    border: none;
-    border-top: 1px solid #000;
-    margin: 0;
-}
-
+/* Orta Kısım (Ürün Bilgileri) */
 .label-middle {
-    padding: 0.3cm;
-    text-align: left;
-    font-size: 13px;
+    display: flex; /* İçeriği esnek kutu modeliyle düzenliyoruz */
+    flex-direction: column; /* İçeriği dikeyde hizalıyoruz */
+    align-items: flex-start; /* İçeriği sola hizalıyoruz */
+    font-size: 50px; /* Yazı boyutunu ayarlıyoruz */
+    line-height: 1; /* Satır yüksekliğini ayarlıyoruz */
+    margin-left: 30px;
+    border-bottom: 3px solid #000;
+
+}
+
+/* Ürün Bilgileri */
+.product-info {
+    width: 100%;
 }
 
 .product-code,
 .product-name {
-    margin: 3px 0;
-    font-size: 13px;
-    font-weight: 500;
+    margin: 0; /* Ürün kodu ve adının üst-alt boşluklarını kaldırıyoruz */
+    font-weight: 600; /* Metinleri biraz daha kalın yapıyoruz */
+    text-align: left; /* Metni sola hizalıyoruz */
+    margin-left: 40px;
 }
 
+/* Ürün Adı İki Satırda */
+.product-name {
+    white-space: normal; /* Metnin iki satırda görünmesini sağlıyoruz */
+    word-wrap: break-word; /* Uzun kelimelerin kırılmasını sağlıyoruz */
+}
+
+/* Alt Kısım (Fiyatlar ve QR Kod) */
 .label-footer {
-    position: absolute;
-    bottom: 0.3cm;
-    left: 0.3cm;
-    right: 0.3cm;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    margin-left: 50px; /* Sol marjı kaldırıyoruz */
+    display: flex; /* İçeriği esnek kutu modeliyle düzenliyoruz */
+    justify-content: space-between; /* İçeriği yatayda aralıklı yapıyoruz */
+    align-items: center; /* İçeriği dikeyde ortalıyoruz */
+    width: 100%;
 }
 
-.scan-text {
-    font-size: 11px;
-    text-align: left;
-    flex: 1;
+/* Fiyatlar Kapsayıcı */
+.price-container {
+    display: flex; /* Fiyatları esnek kutu modeliyle düzenliyoruz */
+    flex-direction: column; /* Fiyatları dikeyde (alt alta) hizalıyoruz */
+    align-items: flex-start; /* Fiyatları sola hizalıyoruz */
+    gap: 10px; /* Fiyatlar arasında 10px boşluk bırakıyoruz */
 }
 
-.qr-code {
-    width: 2.2cm;
-    height: 2.2cm;
+/* Satış Fiyatı Başlığı */
+.price-title {
+    display: block; /* Blok seviyesinde eleman olarak ayarlıyoruz */
+    font-size: 50px; /* Yazı boyutunu ayarlıyoruz */
+    color: #212529; /* Yazı rengini koyu gri yapıyoruz */
+    text-decoration: underline; /* Altını çiziyoruz */
+    margin-bottom: 5px; /* Başlık ile fiyat arasında 5px boşluk bırakıyoruz */
 }
 
-#labelQRCode canvas {
-    width: 100% !important;
-    height: 100% !important;
+/* Satış Fiyatı Bölümü */
+.sales-price {
+    font-size: 50px; /* Fiyatın yazı boyutunu ayarlıyoruz */
+    color: #212529;   /* Yazı rengini koyu gri yapıyoruz */
 }
 
-/* Dikey Etiket İçin Stil */
-.label.vertical {
-    transform: rotate(90deg);
-    transform-origin: center center;
-    width: 6cm;
-    height: 4.5cm;
+/* Liste Fiyatı Bölümü */
+.list-price {
+    font-size: 40px; /* Yazı boyutunu ayarlıyoruz */
+    color: #212529;   /* Yazı rengini koyu gri yapıyoruz */
+}
+
+.list-price strong {
+    color: #000000; /* Liste fiyatını siyah yapıyoruz */
 }
 
 /* QR Kod Bölümü */
-#qrcode {
-    margin-top: 25px;
-    text-align: center;
+.qr-code {
+    width: 400px;      /* QR kod kutusunun genişliğini ayarlıyoruz */
+    height: 400px;     /* QR kod kutusunun yüksekliğini ayarlıyoruz */
+    border: 1px solid #000000; /* Kenarlığı siyah yapıyoruz */
+    background: transparent;  /* Arka plan rengini beyaz yapıyoruz */
+    display: flex;     
+    align-items: center; /* Dikeyde ortalıyoruz */
+    justify-content: center; /* Yatayda ortalıyoruz */
+    box-sizing: border-box; /* Box modelini border-box olarak ayarlıyoruz */
+    margin-bottom: 30px; /* QR kod kutusunun altına 30px boşluk ekliyoruz */
+    margin-right: 80px;
 }
 
-#qrcode a {
-    display: block;
-    margin-top: 15px;
-    font-size: 1.3em;
-    color: #007bff;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-#qrcode a:hover {
-    text-decoration: underline;
+/* QR Kod Canvas Ayarı */
+#labelQRCode canvas {
+    width: 100% !important; /* QR kod canvasının genişliğini %100 yapıyoruz */
+    height: 100% !important; /* QR kod canvasının yüksekliğini %100 yapıyoruz */
 }
 
 /* Responsive Ayarlar */
 @media (max-width: 767.98px) {
-    .phone-preview {
-        width: 100%;
-        height: auto;
-        border: none;
-        border-radius: 0;
-        margin: 0;
-        box-shadow: none;
+    .custom-label {
+        width: 100%;   /* Mobilde etiket genişliğini yüzde 100 yapıyoruz */
+        height: auto;  /* Mobilde etiket yüksekliğini otomatik yapıyoruz */
+        padding: 20px; /* Mobilde iç boşlukları azaltıyoruz */
+        margin-left: 0; /* Sol marjı kaldırıyoruz */
+    }
+    
+    .qr-code {
+        width: 200px;  /* Mobilde QR kod genişliğini küçültüyoruz */
+        height: 200px; /* Mobilde QR kod yüksekliğini küçültüyoruz */
     }
 
-    .navbar .nav-link {
-        margin-right: 10px;
+    .label-footer {
+        flex-direction: column; /* Mobilde footer içeriğini dikeyde hizalıyoruz */
+        align-items: center; /* İçeriği ortalıyoruz */
+        gap: 20px; /* Footer içeriği arasına boşluk ekliyoruz */
     }
 
-    .header, .footer {
-        text-align: center;
-        flex-direction: column;
+    .price-container {
+        align-items: center; /* Fiyatları ortalıyoruz */
     }
 
-    .header .contact-info {
-        margin-top: 10px;
+    .price-title {
+        font-size: 24px; /* Mobilde başlık yazı boyutunu küçültüyoruz */
     }
 
-    .feature {
-        padding: 15px;
+    .sales-price {
+        font-size: 24px; /* Mobilde fiyat yazı boyutunu küçültüyoruz */
     }
 
-    .btn {
-        width: 100%;
-        padding: 12px 0;
+    .list-price {
+        font-size: 30px; /* Mobilde liste fiyatı yazı boyutunu küçültüyoruz */
     }
-
-    .remove-feature-btn {
-        top: 10px;
-        right: 10px;
-    }
-
-    .label {
-        width: 100%;
-        height: auto;
-    }
-
-    .label.vertical {
-        transform: none;
-    }
-}
-
-/* Yazdırma Ayarları */
-@media print {
-    body * {
-        visibility: hidden;
-    }
-    .label {
-        visibility: visible;
-        position: absolute;
-        top: 0;
-        left: 0;
-    }
-}
-
-@page {
-    size: 6cm 4.5cm;
-    margin: 0;
 }
