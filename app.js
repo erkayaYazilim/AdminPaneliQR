@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('navSettings').addEventListener('click', showSettingsPage);
     document.getElementById('navExcelUpload').addEventListener('click', showExcelUploadPage);
     document.getElementById('navViewAllProducts').addEventListener('click', showAllProductsPage);
+    document.getElementById('navAutoAddProducts').addEventListener('click', showAutoAddProductsPage);
 
     const allProductsSearchInput = document.getElementById('allProductsSearchInput');
     if (allProductsSearchInput) {
@@ -130,7 +131,14 @@ function setActiveNav(navId) {
 }
 
 function hideAllSections() {
-    const sections = ['addProductForm', 'settingsPage', 'excelUploadPage', 'allProductsPage'];
+    const sections = [
+      'addProductForm', 
+      'settingsPage', 
+      'excelUploadPage', 
+      'allProductsPage', 
+      'autoAddProductsPage', 
+      'printLabelsPage'
+    ];
     sections.forEach(id => {
         const section = document.getElementById(id);
         if (section) {
@@ -138,6 +146,7 @@ function hideAllSections() {
         }
     });
 }
+
 
 function showAddProductForm() {
     hideAllSections();
@@ -316,19 +325,6 @@ function addFeature() {
 function updateLabel() {
     const productName = document.getElementById('productName')?.value.trim() || 'Ürün Adı';
     const productCode = document.getElementById('productCode')?.value.trim() || 'Ürün Kodu';
-    const listPriceVal = parseFloat(document.getElementById('listPrice')?.value.trim().replace(',', '.')) || 0.00;
-    const discountedPriceVal = parseFloat(document.getElementById('discountedPrice')?.value.trim().replace(',', '.')) || 0.00;
-
-    // Fiyat formatlamak için NumberFormat kullanımı
-    const formatter = new Intl.NumberFormat('tr-TR', {
-        style: 'currency',
-        currency: 'TRY',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
-
-    const formattedListPrice = formatter.format(listPriceVal).replace('', '');
-    const formattedDiscountedPrice = formatter.format(discountedPriceVal).replace('', '');
 
     // Etiketleri güncelle
     const labelProductName = document.getElementById('labelProductName');
@@ -337,11 +333,12 @@ function updateLabel() {
     const labelProductCode = document.getElementById('labelProductCode');
     if (labelProductCode) labelProductCode.textContent = productCode;
 
+    // Fiyat yerine "Detaylar için okutunuz" yazdır
     const labelSalePrice = document.getElementById('labelSalePrice');
-    if (labelSalePrice) labelSalePrice.textContent = `${formattedDiscountedPrice} (KDV DAHİL)`;
+    if (labelSalePrice) labelSalePrice.textContent = 'Detaylar için okutunuz';
 
     const labelListPrice = document.getElementById('labelListPrice');
-    if (labelListPrice) labelListPrice.innerHTML = `Liste Fiyatı: <strong>${formattedListPrice}</strong>  + KDV`;
+    if (labelListPrice) labelListPrice.textContent = '';
 }
 
 
@@ -1053,6 +1050,155 @@ async function saveProduct() {
                 progressBar.style.width = '0%';
                 progressBar.textContent = '0%';
             }
+        }
+    }
+}
+// Menübardaki yeni butona tıklayınca sayfayı göster
+
+
+function showAutoAddProductsPage() {
+    hideAllSections();
+    const autoAddProductsPage = document.getElementById('autoAddProductsPage');
+    if (autoAddProductsPage) {
+        autoAddProductsPage.classList.remove('d-none');
+    }
+    setActiveNav('navAutoAddProducts');
+}
+
+// Otomatik ürün ekleme için global değişken
+window.autoAddExcelData = null;
+
+// Otomatik ürün ekleme Excel okuma
+const autoAddExcelFileInput = document.getElementById('autoAddExcelFileInput');
+if (autoAddExcelFileInput) {
+    autoAddExcelFileInput.addEventListener('change', readAutoAddExcelFile);
+}
+
+function readAutoAddExcelFile(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            const excelData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+            alert('Excel dosyası başarıyla yüklendi. Ürünleri eklemek için "Yükle ve Ekle" butonuna basın.');
+            window.autoAddExcelData = excelData;
+        };
+        reader.readAsArrayBuffer(file);
+    }
+}
+
+// "Yükle ve Ekle" butonu için event listener
+const autoAddProductsBtn = document.getElementById('autoAddProductsBtn');
+if (autoAddProductsBtn) {
+    autoAddProductsBtn.addEventListener('click', handleAutoAddProducts);
+}
+
+async function handleAutoAddProducts() {
+    if (!window.autoAddExcelData) {
+        alert('Lütfen önce bir Excel dosyası yükleyin.');
+        return;
+    }
+
+    // Beklenen sütunlar: KODU, ADI, FİYAT, LİSTE FİYATI, MİKTAR, AL.SİP.MİK., SİP.SON.KAL.MİKTAR
+    // Excel'deki ilk satırı header olarak alıyoruz
+    const headers = window.autoAddExcelData[0].map(h => h.toString().toUpperCase());
+
+    const requiredColumns = ["KODU", "ADI", "FİYAT", "LİSTE FİYATI", "MİKTAR", "AL.SİP.MİK.", "SİP.SON.KAL.MİKTAR"];
+    for (const col of requiredColumns) {
+        if (!headers.includes(col)) {
+            alert(`Excel dosyasında "${col}" sütunu bulunamadı.`);
+            return;
+        }
+    }
+
+    const codeIndex = headers.indexOf("KODU");
+    const nameIndex = headers.indexOf("ADI");
+    const discountIndex = headers.indexOf("FİYAT");
+    const listIndex = headers.indexOf("LİSTE FİYATI");
+    const stockIndex = headers.indexOf("MİKTAR");
+    const alSipMikIndex = headers.indexOf("AL.SİP.MİK.");
+    const sipSonKalIndex = headers.indexOf("SİP.SON.KAL.MİKTAR");
+
+    const totalRows = window.autoAddExcelData.length - 1; // header harici
+    let processedRows = 0;
+
+    const autoAddUploadProgress = document.getElementById('autoAddUploadProgress');
+    const autoAddProgressBar = document.getElementById('autoAddProgressBar');
+    if (autoAddUploadProgress && autoAddProgressBar) {
+        autoAddUploadProgress.classList.remove('d-none');
+        autoAddUploadProgress.style.display = 'block';
+        autoAddProgressBar.style.width = '0%';
+        autoAddProgressBar.textContent = '0%';
+    }
+
+    try {
+        for (let i = 1; i < window.autoAddExcelData.length; i++) {
+            const row = window.autoAddExcelData[i];
+        
+            const productCode = row[codeIndex] ? row[codeIndex].toString().trim() : '';
+            const productName = row[nameIndex] ? row[nameIndex].toString().trim() : '';
+            const discountedPrice = row[discountIndex] ? row[discountIndex].toString().trim() : '';
+            const listPrice = row[listIndex] ? row[listIndex].toString().trim() : '';
+            const stock = row[stockIndex] ? parseInt(row[stockIndex]) : 0;
+            const alSipMik = row[alSipMikIndex] ? row[alSipMikIndex].toString() : '';
+            const sipSonKal = row[sipSonKalIndex] ? row[sipSonKalIndex].toString() : '';
+        
+            if (productCode && productName) {
+                const productKey = database.ref().child('products').push().key;
+        
+                const productData = {
+                    productName: productName,
+                    productCode: productCode,
+                    listPrice: listPrice,
+                    discountedPrice: discountedPrice,
+                    productDescription: `Ürün fotoğrafı ve açıklamaları daha sonra yüklenecektir. AL.SİP.MİK: ${alSipMik}, SİP.SON.KAL.MİKTAR: ${sipSonKal}`,
+                    productLink: '',   // İsterseniz boş bırakın veya dinamik verebilirsiniz
+                    images: [],        // Otomatik eklemede resim yüklenmiyor
+                    features: [],      // Özellik eklenmiyor
+                    stock: stock,
+                    saleable: true     // İsteğe göre true/false set edilebilir
+                };
+        
+                await database.ref('products/' + productKey).set(productData);
+            }
+        
+            processedRows++;
+            let progress = Math.round((processedRows / totalRows) * 100);
+            if (autoAddProgressBar) {
+                autoAddProgressBar.style.width = `${progress}%`;
+                autoAddProgressBar.textContent = `${progress}%`;
+            }
+        
+        
+        }
+
+        alert('Tüm ürünler başarıyla eklendi!');
+
+        if (autoAddUploadProgress && autoAddProgressBar) {
+            autoAddUploadProgress.classList.add('d-none');
+            autoAddUploadProgress.style.display = 'none';
+            autoAddProgressBar.style.width = '0%';
+            autoAddProgressBar.textContent = '0%';
+        }
+
+        window.autoAddExcelData = null;
+        const autoAddExcelFileInput = document.getElementById('autoAddExcelFileInput');
+        if (autoAddExcelFileInput) {
+            autoAddExcelFileInput.value = '';
+        }
+
+    } catch (error) {
+        console.error('Excel dosyası işlenirken hata oluştu:', error);
+        alert('Excel dosyası işlenirken hata oluştu.');
+        if (autoAddUploadProgress && autoAddProgressBar) {
+            autoAddUploadProgress.classList.add('d-none');
+            autoAddUploadProgress.style.display = 'none';
+            autoAddProgressBar.style.width = '0%';
+            autoAddProgressBar.textContent = '0%';
         }
     }
 }

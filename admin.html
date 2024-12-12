@@ -63,11 +63,35 @@
                             <i class="bi bi-eye me-1"></i> Bütün Ürünleri Gör
                         </a>
                     </li>
+                    <!-- Mevcut nav barınıza eklemeniz gereken nav item -->
+<li class="nav-item">
+    <a class="nav-link" href="#" id="navAutoAddProducts">
+        <i class="bi bi-file-earmark-plus me-1"></i> Otomatik Ürün Ekle
+    </a>
+</li>
+
 
                 </ul>
             </div>
         </div>
     </nav>
+    <!-- Otomatik Ürün Ekleme Sayfası -->
+<div id="autoAddProductsPage" class="d-none">
+    <h1 class="mb-4">Otomatik Ürün Ekle</h1>
+    <div class="card p-4">
+        <div class="mb-3">
+            <label for="autoAddExcelFileInput" class="form-label">Excel Dosyası Yükle:</label>
+            <input type="file" id="autoAddExcelFileInput" accept=".xls,.xlsx" class="form-control">
+        </div>
+        <p class="mt-2">Excel dosyasında şu sütunların bulunması gerekmektedir: <strong>KODU, ADI, FİYAT, LİSTE FİYATI, MİKTAR, AL.SİP.MİK., SİP.SON.KAL.MİKTAR</strong></p>
+        <div class="progress mt-3 d-none" id="autoAddUploadProgress">
+            <div class="progress-bar" role="progressbar" style="width: 0%;" id="autoAddProgressBar">0%</div>
+        </div>
+        <button type="button" id="autoAddProductsBtn" class="btn btn-success mt-3">
+            <i class="bi bi-upload me-1"></i> Yükle ve Ekle
+        </button>
+    </div>
+</div>
 
     <!-- İçerik Bölümü -->
     <div class="container mt-4" id="content">
@@ -253,11 +277,11 @@
                                 <div class="label-footer">
                                     <div class="price-container">
                                         <div class="sales-price mb-2">
-                                            <span id="labelSalePriceTitle" class="price-title">Satış Fiyatı</span>
+                                            <span id="labelSalePriceTitle" class="price-title"></span>
                                             <span id="labelSalePrice">0.00 TL (KDV DAHİL)</span>
                                         </div>
                                         <div class="list-price mb-2">
-                                            <span id="labelListPrice">Liste Fiyatı: <strong>0.00 TL</strong> + KDV</span>
+                                            <span id="labelListPrice"><strong>0.00 TL</strong> + KDV</span>
                                         </div>
                                     </div>
                                     <div class="qr-code" id="labelQRCode"></div>
@@ -467,31 +491,35 @@
        }
 
        async function generateLabelImageData(product) {
-           // Etiket bilgilerini doldur
-           document.getElementById('labelProductName').textContent = product.productName || 'Ürün Adı';
-           document.getElementById('labelProductCode').textContent = product.productCode || 'Ürün Kodu';
-           document.getElementById('labelSalePrice').textContent = `${product.discountedPrice || '0.00'} TL (KDV DAHİL)`;
-           document.getElementById('labelListPrice').innerHTML = `Liste Fiyatı: <strong>${product.listPrice || '0.00'} TL</strong> + KDV`;
+    // Ürün adı ve kodunu ayarla
+    document.getElementById('labelProductName').textContent = product.productName || 'Ürün Adı';
+    document.getElementById('labelProductCode').textContent = product.productCode || 'Ürün Kodu';
+    
+    // Fiyat alanlarını kaldır veya yerine sabit bir mesaj yaz
+    document.getElementById('labelSalePrice').textContent = 'Detaylar için okutunuz';
+    document.getElementById('labelListPrice').textContent = '';
 
-           // QR Kod Oluştur
-           const qrCodeElement = document.getElementById('labelQRCode');
-           qrCodeElement.innerHTML = '';
-           new QRCode(qrCodeElement, {
-               text: `https://erkayayazilim.github.io/qrcode/user.html?id=${product.key}`,
-               width: 128,
-               height: 128,
-           });
+    // QR Kod Oluştur
+    const qrCodeElement = document.getElementById('labelQRCode');
+    qrCodeElement.innerHTML = '';
+    new QRCode(qrCodeElement, {
+        text: `https://erkayayazilim.github.io/qrcode/user.html?id=${product.key}`,
+        width: 128,
+        height: 128,
+    });
 
-           // QR kodun çizilmesi için kısa bir bekleme
-           await new Promise(r => setTimeout(r, 300));
+    // QR kodun çizilmesi için kısa bir bekleme
+    await new Promise(r => setTimeout(r, 300));
 
-           const labelElement = document.getElementById('labelElement');
-           const canvas = await html2canvas(labelElement, {
-               scale: 2,
-               backgroundColor: "#ffffff"
-           });
-           return canvas.toDataURL('image/png');
-       }
+    const labelElement = document.getElementById('labelElement');
+    const canvas = await html2canvas(labelElement, {
+        scale: 2,
+        backgroundColor: "#ffffff"
+    });
+    return canvas.toDataURL('image/png');
+}
+
+
    </script>
 </body>
 </html>

@@ -543,13 +543,13 @@ h2, h4 {
 /* Satış Fiyatı Bölümü */
 .sales-price {
     font-size: 50px; /* Fiyatın yazı boyutunu ayarlıyoruz */
-    color: #212529;   /* Yazı rengini koyu gri yapıyoruz */
+    color: #000000;   /* Yazı rengini koyu gri yapıyoruz */
 }
 
 /* Liste Fiyatı Bölümü */
 .list-price {
     font-size: 40px; /* Yazı boyutunu ayarlıyoruz */
-    color: #212529;   /* Yazı rengini koyu gri yapıyoruz */
+    color: #000000;   /* Yazı rengini koyu gri yapıyoruz */
 }
 
 .list-price strong {
