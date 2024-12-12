@@ -1096,18 +1096,16 @@ const autoAddProductsBtn = document.getElementById('autoAddProductsBtn');
 if (autoAddProductsBtn) {
     autoAddProductsBtn.addEventListener('click', handleAutoAddProducts);
 }
-
 async function handleAutoAddProducts() {
     if (!window.autoAddExcelData) {
         alert('Lütfen önce bir Excel dosyası yükleyin.');
         return;
     }
 
-    // Beklenen sütunlar: KODU, ADI, FİYAT, LİSTE FİYATI, MİKTAR, AL.SİP.MİK., SİP.SON.KAL.MİKTAR
-    // Excel'deki ilk satırı header olarak alıyoruz
+    // Beklenen sütunlar: KODU, ADI, FİYAT, LİSTE FİYATI
     const headers = window.autoAddExcelData[0].map(h => h.toString().toUpperCase());
 
-    const requiredColumns = ["KODU", "ADI", "FİYAT", "LİSTE FİYATI", "MİKTAR", "AL.SİP.MİK.", "SİP.SON.KAL.MİKTAR"];
+    const requiredColumns = ["KODU", "ADI", "FİYAT", "LİSTE FİYATI"];
     for (const col of requiredColumns) {
         if (!headers.includes(col)) {
             alert(`Excel dosyasında "${col}" sütunu bulunamadı.`);
@@ -1119,12 +1117,11 @@ async function handleAutoAddProducts() {
     const nameIndex = headers.indexOf("ADI");
     const discountIndex = headers.indexOf("FİYAT");
     const listIndex = headers.indexOf("LİSTE FİYATI");
-    const stockIndex = headers.indexOf("MİKTAR");
-    const alSipMikIndex = headers.indexOf("AL.SİP.MİK.");
-    const sipSonKalIndex = headers.indexOf("SİP.SON.KAL.MİKTAR");
 
-    const totalRows = window.autoAddExcelData.length - 1; // header harici
+    const totalRows = window.autoAddExcelData.length - 1; // Header hariç
     let processedRows = 0;
+    let skippedRows = 0;
+    let addedRows = 0;
 
     const autoAddUploadProgress = document.getElementById('autoAddUploadProgress');
     const autoAddProgressBar = document.getElementById('autoAddProgressBar');
@@ -1136,47 +1133,59 @@ async function handleAutoAddProducts() {
     }
 
     try {
+        // **İyileştirme:** Tüm mevcut ürün kodlarını bir kerede alarak sorgu sayısını azaltma
+        const existingProductCodesSnapshot = await database.ref('products').once('value');
+        const existingProductCodes = new Set();
+        existingProductCodesSnapshot.forEach(childSnapshot => {
+            const productCode = childSnapshot.val().productCode;
+            if (productCode) {
+                existingProductCodes.add(productCode.toString().trim().toUpperCase());
+            }
+        });
+
         for (let i = 1; i < window.autoAddExcelData.length; i++) {
             const row = window.autoAddExcelData[i];
-        
-            const productCode = row[codeIndex] ? row[codeIndex].toString().trim() : '';
+
+            const productCode = row[codeIndex] ? row[codeIndex].toString().trim().toUpperCase() : '';
             const productName = row[nameIndex] ? row[nameIndex].toString().trim() : '';
             const discountedPrice = row[discountIndex] ? row[discountIndex].toString().trim() : '';
             const listPrice = row[listIndex] ? row[listIndex].toString().trim() : '';
-            const stock = row[stockIndex] ? parseInt(row[stockIndex]) : 0;
-            const alSipMik = row[alSipMikIndex] ? row[alSipMikIndex].toString() : '';
-            const sipSonKal = row[sipSonKalIndex] ? row[sipSonKalIndex].toString() : '';
-        
+
             if (productCode && productName) {
-                const productKey = database.ref().child('products').push().key;
-        
-                const productData = {
-                    productName: productName,
-                    productCode: productCode,
-                    listPrice: listPrice,
-                    discountedPrice: discountedPrice,
-                    productDescription: `Ürün fotoğrafı ve açıklamaları daha sonra yüklenecektir. AL.SİP.MİK: ${alSipMik}, SİP.SON.KAL.MİKTAR: ${sipSonKal}`,
-                    productLink: '',   // İsterseniz boş bırakın veya dinamik verebilirsiniz
-                    images: [],        // Otomatik eklemede resim yüklenmiyor
-                    features: [],      // Özellik eklenmiyor
-                    stock: stock,
-                    saleable: true     // İsteğe göre true/false set edilebilir
-                };
-        
-                await database.ref('products/' + productKey).set(productData);
+                if (existingProductCodes.has(productCode)) {
+                    // Aynı KODU'ya sahip ürün zaten mevcut, atla
+                    skippedRows++;
+                } else {
+                    const productKey = database.ref().child('products').push().key;
+
+                    const productData = {
+                        productName: productName,
+                        productCode: productCode,
+                        listPrice: listPrice,
+                        discountedPrice: discountedPrice,
+                        productDescription: `Ürün fotoğrafı ve açıklamaları daha sonra yüklenecektir.`,
+                        productLink: '',   // İsterseniz boş bırakın veya dinamik verebilirsiniz
+                        images: [],        // Otomatik eklemede resim yüklenmiyor
+                        features: [],      // Özellik eklenmiyor
+                        stock: 0,          // Varsayılan stok değeri
+                        saleable: true     // Varsayılan satış durumu
+                    };
+
+                    await database.ref('products/' + productKey).set(productData);
+                    addedRows++;
+                    existingProductCodes.add(productCode); // Yeni eklenen ürün kodunu set'e ekle
+                }
             }
-        
+
             processedRows++;
             let progress = Math.round((processedRows / totalRows) * 100);
             if (autoAddProgressBar) {
                 autoAddProgressBar.style.width = `${progress}%`;
                 autoAddProgressBar.textContent = `${progress}%`;
             }
-        
-        
         }
 
-        alert('Tüm ürünler başarıyla eklendi!');
+        alert(`Ürün ekleme işlemi tamamlandı!\nToplam İşlenen Satır: ${processedRows}\nEklenen Ürün: ${addedRows}\nAtlanan Ürün: ${skippedRows}`);
 
         if (autoAddUploadProgress && autoAddProgressBar) {
             autoAddUploadProgress.classList.add('d-none');
@@ -1202,3 +1211,4 @@ async function handleAutoAddProducts() {
         }
     }
 }
+
