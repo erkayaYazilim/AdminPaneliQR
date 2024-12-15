@@ -454,7 +454,7 @@ h2, h4 {
     position: relative; /* İçeriklerin konumlandırılması için relative yapıyoruz */
     font-family: 'Roboto', sans-serif; /* Etiket içeriği için Roboto fontunu kullanıyoruz */
     width: 1100px;   /* Etiket genişliğini 1400px yapıyoruz */
-    height: 750px;   /* Etiket yüksekliğini 900px yapıyoruz */
+    height: 880px;   /* Etiket yüksekliğini 900px yapıyoruz */
     border: 2px solid #dee2e6; /* Etiketin kenarlığını gri yapıyoruz */
     background-color: transparent;  /* Etiket arka planını beyaz yapıyoruz */
     margin: 0 auto; /* Etiketi ortalıyoruz */

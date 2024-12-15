@@ -335,7 +335,7 @@ function updateLabel() {
 
     // Fiyat yerine "Detaylar için okutunuz" yazdır
     const labelSalePrice = document.getElementById('labelSalePrice');
-    if (labelSalePrice) labelSalePrice.textContent = 'Detaylar için okutunuz';
+    if (labelSalePrice) labelSalePrice.textContent = 'Fiyat bilgisi için okutunuz';
 
     const labelListPrice = document.getElementById('labelListPrice');
     if (labelListPrice) labelListPrice.textContent = '';
