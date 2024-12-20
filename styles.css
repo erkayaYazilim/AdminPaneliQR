@@ -446,7 +446,7 @@ h2, h4 {
     margin-top: 0px;
     margin-bottom: 0px;
     color: #000000; /* Başlık rengini siyah yapıyoruz */
-    font-size: 50px; /* Başlık yazı boyutunu ayarlıyoruz */
+    font-size: 60px; /* Başlık yazı boyutunu ayarlıyoruz */
 }
 
 /* Etiket Stilleri */
@@ -477,7 +477,7 @@ h2, h4 {
     background-color: #000000; /* Etiketin üst kısmının arka planını siyah yapıyoruz */
     color: #fff; /* Üst kısımdaki metin rengini beyaz yapıyoruz */
     text-align: center; /* Metni ortalıyoruz */
-    font-size: 80px; /* Metin font boyutunu ayarlıyoruz */
+    font-size: 90px; /* Metin font boyutunu ayarlıyoruz */
     font-weight: bold; /* Metni kalın yapıyoruz */
     padding: 0px 0; /* Üst kısım iç dolgusunu kaldırıyoruz */
 }
@@ -488,7 +488,7 @@ h2, h4 {
     display: flex; /* İçeriği esnek kutu modeliyle düzenliyoruz */
     flex-direction: column; /* İçeriği dikeyde hizalıyoruz */
     align-items: flex-start; /* İçeriği sola hizalıyoruz */
-    font-size: 50px; /* Yazı boyutunu ayarlıyoruz */
+    font-size: 70px; /* Yazı boyutunu ayarlıyoruz */
     line-height: 1; /* Satır yüksekliğini ayarlıyoruz */
     margin-left: 30px;
     border-bottom: 3px solid #000;
@@ -542,13 +542,13 @@ h2, h4 {
 
 /* Satış Fiyatı Bölümü */
 .sales-price {
-    font-size: 50px; /* Fiyatın yazı boyutunu ayarlıyoruz */
+    font-size: 70px; /* Fiyatın yazı boyutunu ayarlıyoruz */
     color: #000000;   /* Yazı rengini koyu gri yapıyoruz */
 }
 
 /* Liste Fiyatı Bölümü */
 .list-price {
-    font-size: 40px; /* Yazı boyutunu ayarlıyoruz */
+    font-size: 60px; /* Yazı boyutunu ayarlıyoruz */
     color: #000000;   /* Yazı rengini koyu gri yapıyoruz */
 }
 
